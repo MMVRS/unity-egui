@@ -1,9 +1,10 @@
 #if UNITY_EDITOR
 
 using System;
+using Build1.UnityEGUI.Results;
 using UnityEditor;
 
-namespace Editor
+namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
@@ -42,43 +43,43 @@ namespace Editor
                 onConfirm?.Invoke();
         }
         
-        public static void Alert(string title, string text, Action<EGUIAlertResult> onResult)
+        public static void Alert(string title, string text, Action<AlertResult> onResult)
         {
             Alert(title, text, AlertConfirmTextDefault, AlertCancelTextDefault, AlertDiscardTextDefault, onResult);
         }
 
-        public static void Alert(string title, string text, string confirmText, string cancelText, string discardText, Action<EGUIAlertResult> onResult)
+        public static void Alert(string title, string text, string confirmText, string cancelText, string discardText, Action<AlertResult> onResult)
         {
             var res = EditorUtility.DisplayDialogComplex(title, text, confirmText, cancelText, discardText);
             switch (res)
             {
                 case 0:
-                    onResult.Invoke(EGUIAlertResult.Confirm);
+                    onResult.Invoke(AlertResult.Confirm);
                     break;
                 case 1:
-                    onResult.Invoke(EGUIAlertResult.Cancel);
+                    onResult.Invoke(AlertResult.Cancel);
                     break;
                 case 2:
-                    onResult.Invoke(EGUIAlertResult.Discard);
+                    onResult.Invoke(AlertResult.Discard);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(res), res, null);
             }
         }
 
-        public static T Alert<T>(string title, string text, Func<EGUIAlertResult, T> onResult)
+        public static T Alert<T>(string title, string text, Func<AlertResult, T> onResult)
         {
             return Alert(title, text, AlertConfirmTextDefault, AlertCancelTextDefault, AlertDiscardTextDefault, onResult);
         }
         
-        public static T Alert<T>(string title, string text, string confirmText, string cancelText, string discardText, Func<EGUIAlertResult, T> onResult)
+        public static T Alert<T>(string title, string text, string confirmText, string cancelText, string discardText, Func<AlertResult, T> onResult)
         {
             var res = EditorUtility.DisplayDialogComplex(title, text, confirmText, cancelText, discardText);
             return res switch
             {
-                0 => onResult.Invoke(EGUIAlertResult.Confirm),
-                1 => onResult.Invoke(EGUIAlertResult.Cancel),
-                2 => onResult.Invoke(EGUIAlertResult.Discard),
+                0 => onResult.Invoke(AlertResult.Confirm),
+                1 => onResult.Invoke(AlertResult.Cancel),
+                2 => onResult.Invoke(AlertResult.Discard),
                 _ => throw new ArgumentOutOfRangeException(nameof(res), res, null)
             };
         }

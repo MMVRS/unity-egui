@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace Editor.List
+namespace Build1.UnityEGUI.List
 {
     public abstract class EGUIListItemRenderer<I>
     {

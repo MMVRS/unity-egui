@@ -4,7 +4,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.Window
+namespace Build1.UnityEGUI.Window
 {
     public abstract class EGUIWindow : EditorWindow
     {
@@ -58,30 +58,30 @@ namespace Editor.Window
             return GetWindow<T>(utility, title, focus);
         }
 
-        public static T Open<T>(string title, Vector2Int dimensions, bool utility, bool focus, EGUIWindowPosition position = EGUIWindowPosition.Center) where T : EGUIWindow
+        public static T Open<T>(string title, Vector2Int dimensions, bool utility, bool focus, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
         {
-            return Open<T>(title, dimensions.x, dimensions.y, utility, focus, position);
+            return Open<T>(title, dimensions.x, dimensions.y, utility, focus, anchor);
         }
 
-        public static T Open<T>(string title, int width, int height, bool utility, bool focus, EGUIWindowPosition position = EGUIWindowPosition.Center) where T : EGUIWindow
+        public static T Open<T>(string title, int width, int height, bool utility, bool focus, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
         {
             var window = GetWindow<T>(utility, title, focus);
-            window.position = GetWindowRect(width, height, position);
+            window.position = GetWindowRect(width, height, anchor);
             return window;
         }
 
-        public static Rect GetWindowRect(int width, int height, EGUIWindowPosition position)
+        public static Rect GetWindowRect(int width, int height, EGUIWindowAnchor anchor)
         {
-            switch (position)
+            switch (anchor)
             {
-                case EGUIWindowPosition.Center:
+                case EGUIWindowAnchor.Center:
                     var main = EditorGUIUtility.GetMainWindowPosition();
                     var centerWidth = (main.width - width) * 0.5f;
                     var centerHeight = (main.height - height) * 0.5f;
                     return new Rect(main.x + centerWidth, main.y + centerHeight, width, height);
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(position), position, null);
+                    throw new ArgumentOutOfRangeException(nameof(anchor), anchor, null);
             }
         }
     }

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Editor.Json
+namespace Build1.UnityEGUI.Json
 {
     public sealed class JsonTreeView : TreeView
     {

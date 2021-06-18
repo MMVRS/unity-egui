@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 
-namespace Editor
+namespace Build1.UnityEGUI.Results
 {
-    public enum EGUIAlertResult
+    public enum AlertResult
     {
         Confirm = 1,
         Cancel  = 2,

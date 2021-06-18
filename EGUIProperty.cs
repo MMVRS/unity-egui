@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Editor.List;
-using Editor.Parameters;
+using Build1.UnityEGUI.List;
+using Build1.UnityEGUI.RenderModes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor
+namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {

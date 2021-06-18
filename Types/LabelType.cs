@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 
-namespace Editor.Parameters
+namespace Build1.UnityEGUI.Types
 {
-    public enum EGUILabelType
+    public enum LabelType
     {
         Default = 1,
         Error   = 2

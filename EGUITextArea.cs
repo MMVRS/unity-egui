@@ -4,7 +4,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor
+namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {

@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 
-namespace Editor.Parameters
+namespace Build1.UnityEGUI.RenderModes
 {
     public enum NumericRenderMode
     {

@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 
-namespace Editor.Parameters
+namespace Build1.UnityEGUI.Types
 {
-    public enum EGUILayoutMode
+    public enum LayoutType
     {
         Horizontal = 1,
         Vertical   = 2

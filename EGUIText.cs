@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
 
 using System;
-using Editor.Parameters;
+using Build1.UnityEGUI.Types;
 using UnityEngine;
 
-namespace Editor
+namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
@@ -26,44 +26,44 @@ namespace Editor
          * Titles.
          */
 
-        public static void Title(string title, EGUITitleType type, int offsetX)
+        public static void Title(string title, TitleType type, int offsetX)
         {
             Title(title, type, new Vector2(offsetX, 0));
         }
 
-        public static void Title(string title, EGUITitleType type, bool stretchHeight = false, TextAnchor textAlignment = TextAnchor.UpperLeft)
+        public static void Title(string title, TitleType type, bool stretchHeight = false, TextAnchor textAlignment = TextAnchor.UpperLeft)
         {
             Title(title, type, Vector2.zero, stretchHeight, textAlignment);
         }
         
-        public static void Title(string title, EGUITitleType type, int offsetX, bool stretchHeight, TextAnchor textAlignment)
+        public static void Title(string title, TitleType type, int offsetX, bool stretchHeight, TextAnchor textAlignment)
         {
             Title(title, type, new Vector2(offsetX, 0), stretchHeight, textAlignment);
         }
 
-        public static void Title(string title, EGUITitleType type, Vector2 offset, bool stretchHeight = false, TextAnchor textAlignment = TextAnchor.UpperLeft)
+        public static void Title(string title, TitleType type, Vector2 offset, bool stretchHeight = false, TextAnchor textAlignment = TextAnchor.UpperLeft)
         {
             var fontSize = type switch
             {
-                EGUITitleType.H1 => TitleH1FontSize,
-                EGUITitleType.H2 => TitleH2FontSize,
-                EGUITitleType.H3 => TitleH3FontSize,
+                TitleType.H1 => TitleH1FontSize,
+                TitleType.H2 => TitleH2FontSize,
+                TitleType.H3 => TitleH3FontSize,
                 _                => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
 
             var fontStyle = type switch
             {
-                EGUITitleType.H1 => TitleH1FontStyle,
-                EGUITitleType.H2 => TitleH2FontStyle,
-                EGUITitleType.H3 => TitleH3FontStyle,
+                TitleType.H1 => TitleH1FontStyle,
+                TitleType.H2 => TitleH2FontStyle,
+                TitleType.H3 => TitleH3FontStyle,
                 _                => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
 
             var color = type switch
             {
-                EGUITitleType.H1 => TitleH1Color,
-                EGUITitleType.H2 => TitleH2Color,
-                EGUITitleType.H3 => TitleH3Color,
+                TitleType.H1 => TitleH1Color,
+                TitleType.H2 => TitleH2Color,
+                TitleType.H3 => TitleH3Color,
                 _                => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
 
@@ -87,21 +87,21 @@ namespace Editor
          * Labels.
          */
 
-        public static void Label(string text)                          { GUILayout.Label(text, LabelBuildStyle(EGUILabelType.Default)); }
-        public static void Label(string text, EGUILabelType type)      { GUILayout.Label(text, LabelBuildStyle(type)); }
-        public static void Label(string text, int width)               { GUILayout.Label(text, LabelBuildStyle(EGUILabelType.Default), GUILayout.Width(width)); }
-        public static void Label(string text, int width, float height) { GUILayout.Label(text, LabelBuildStyle(EGUILabelType.Default), GUILayout.Width(width), GUILayout.Height(height)); }
+        public static void Label(string text)                          { GUILayout.Label(text, LabelBuildStyle(LabelType.Default)); }
+        public static void Label(string text, LabelType type)      { GUILayout.Label(text, LabelBuildStyle(type)); }
+        public static void Label(string text, int width)               { GUILayout.Label(text, LabelBuildStyle(LabelType.Default), GUILayout.Width(width)); }
+        public static void Label(string text, int width, float height) { GUILayout.Label(text, LabelBuildStyle(LabelType.Default), GUILayout.Width(width), GUILayout.Height(height)); }
 
         public static void Label(string text, FontStyle fontStyle)
         {
-            var style = LabelBuildStyle(EGUILabelType.Default);
+            var style = LabelBuildStyle(LabelType.Default);
             style.fontStyle = fontStyle;
             GUILayout.Label(text, style);
         }
 
         public static void Label(string text, bool stretchedWidth, TextAnchor alignment)
         {
-            var style = LabelBuildStyle(EGUILabelType.Default);
+            var style = LabelBuildStyle(LabelType.Default);
             style.alignment = alignment;
             style.stretchWidth = stretchedWidth;
             GUILayout.Label(text, style);
@@ -109,7 +109,7 @@ namespace Editor
 
         public static void Label(string text, FontStyle fontStyle, bool stretchedWidth, TextAnchor alignment)
         {
-            var style = LabelBuildStyle(EGUILabelType.Default);
+            var style = LabelBuildStyle(LabelType.Default);
             style.alignment = alignment;
             style.fontStyle = fontStyle;
             style.stretchWidth = stretchedWidth;
@@ -118,7 +118,7 @@ namespace Editor
 
         public static void Label(string text, float height, bool stretchedWidth, TextAnchor alignment)
         {
-            var style = LabelBuildStyle(EGUILabelType.Default);
+            var style = LabelBuildStyle(LabelType.Default);
             style.stretchWidth = stretchedWidth;
             style.alignment = alignment;
             GUILayout.Label(text, style, GUILayout.Height(height));
@@ -126,13 +126,13 @@ namespace Editor
         
         public static void Label(string text, int width, float height, bool stretchedWidth, TextAnchor alignment)
         {
-            var style = LabelBuildStyle(EGUILabelType.Default);
+            var style = LabelBuildStyle(LabelType.Default);
             style.stretchWidth = stretchedWidth;
             style.alignment = alignment;
             GUILayout.Label(text, style, GUILayout.Width(width), GUILayout.Height(height));
         }
 
-        public static void Label(string text, EGUILabelType type, bool stretchedWidth, TextAnchor alignment)
+        public static void Label(string text, LabelType type, bool stretchedWidth, TextAnchor alignment)
         {
             var style = LabelBuildStyle(type);
             style.alignment = alignment;
@@ -140,7 +140,7 @@ namespace Editor
             GUILayout.Label(text, style);
         }
         
-        public static void Label(string text, float height, EGUILabelType type, bool stretchedWidth, TextAnchor alignment)
+        public static void Label(string text, float height, LabelType type, bool stretchedWidth, TextAnchor alignment)
         {
             var style = LabelBuildStyle(type);
             style.alignment = alignment;
@@ -148,12 +148,12 @@ namespace Editor
             GUILayout.Label(text, style, GUILayout.Height(height));
         }
 
-        private static GUIStyle LabelBuildStyle(EGUILabelType type)
+        private static GUIStyle LabelBuildStyle(LabelType type)
         {
             var color = type switch
             {
-                EGUILabelType.Default => GUI.skin.label.normal.textColor,
-                EGUILabelType.Error   => LabelErrorColor,
+                LabelType.Default => GUI.skin.label.normal.textColor,
+                LabelType.Error   => LabelErrorColor,
                 _                     => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
 

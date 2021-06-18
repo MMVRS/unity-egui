@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 
-namespace Editor.Parameters
+namespace Build1.UnityEGUI.Types
 {
-    public enum EGUITitleType
+    public enum TitleType
     {
         H1 = 1,
         H2 = 2,

@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 
-namespace Editor.List
+namespace Build1.UnityEGUI.List
 {
     public enum EGUIListItemRendererAction
     {

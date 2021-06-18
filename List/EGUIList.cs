@@ -3,15 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Editor.Parameters;
+using Build1.UnityEGUI.Types;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.List
+namespace Build1.UnityEGUI.List
 {
     public sealed class EGUIList<I, R> where R : EGUIListItemRenderer<I>
     {
-        public EGUILayoutMode LayoutMode { get; set; } = EGUILayoutMode.Vertical;
+        public LayoutType LayoutType { get; set; } = LayoutType.Vertical;
         public string         Label      { get; set; }
         public List<I>        Items      { get; set; }
         public int            CountMax   { get; set; } = 100;
@@ -45,12 +45,12 @@ namespace Editor.List
                 padding = new RectOffset(Padding, Padding, Padding, Padding)
             };
 
-            switch (LayoutMode)
+            switch (LayoutType)
             {
-                case EGUILayoutMode.Horizontal:
+                case LayoutType.Horizontal:
                     EGUI.Horizontally(style, BuildImpl);
                     break;
-                case EGUILayoutMode.Vertical:
+                case LayoutType.Vertical:
                     EGUI.Vertically(style, BuildImpl);
                     break;
                 default:
