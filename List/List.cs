@@ -9,21 +9,21 @@ using UnityEngine;
 
 namespace Build1.UnityEGUI.List
 {
-    public sealed class EGUIList<I, R> where R : EGUIListItemRenderer<I>
+    public sealed class List<I, R> where R : ListItemRenderer<I>
     {
         public LayoutType LayoutType { get; set; } = LayoutType.Vertical;
-        public string         Label      { get; set; }
-        public List<I>        Items      { get; set; }
-        public int            CountMax   { get; set; } = 100;
-        public int            Padding    { get; set; } = 10;
+        public string     Label      { get; set; }
+        public List<I>    Items      { get; set; }
+        public int        CountMax   { get; set; } = 100;
+        public int        Padding    { get; set; } = 10;
 
         public event Action<List<I>>        onCreated;
-        public event EGUIListAddDelegate<I> onAdd;
+        public event ListItemAddDelegate<I> onAdd;
         public event Func<I, bool>          onDelete;
         public event Action<R>              onItemRenderer;
 
-        public EGUIList() { }
-        public EGUIList(List<I> items) { Items = items; }
+        public List() { }
+        public List(List<I> items) { Items = items; }
 
         public void Build()
         {
@@ -93,21 +93,21 @@ namespace Build1.UnityEGUI.List
             }
         }
 
-        private void OnItemRendererDefault(EGUIListItemRenderer<I> renderer)
+        private void OnItemRendererDefault(ListItemRenderer<I> renderer)
         {
             I item;
             int index;
 
             switch (renderer.Action)
             {
-                case EGUIListItemRendererAction.Up:
+                case ListItemAction.Up:
                     item = renderer.Item;
                     index = Math.Max(0, Items.IndexOf(item) - 1);
                     Items.Remove(item);
                     Items.Insert(index, item);
                     break;
 
-                case EGUIListItemRendererAction.Down:
+                case ListItemAction.Down:
                     item = renderer.Item;
                     index = Items.IndexOf(item);
                     if (index < Items.Count - 1)
@@ -119,7 +119,7 @@ namespace Build1.UnityEGUI.List
 
                     break;
 
-                case EGUIListItemRendererAction.Delete:
+                case ListItemAction.Delete:
                     if (onDelete == null)
                     {
                         EGUI.LogError("EGUIList: Delete handler not specified.");

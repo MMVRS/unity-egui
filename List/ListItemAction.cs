@@ -2,7 +2,7 @@
 
 namespace Build1.UnityEGUI.List
 {
-    public enum EGUIListItemRendererAction
+    public enum ListItemAction
     {
         None   = 0,
         Up     = 1,

@@ -183,17 +183,17 @@ namespace Build1.UnityEGUI
          * Properties List.
          */
 
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName) where R : EGUIListItemRenderer<I>
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName) where R : ListItemRenderer<I>
         {
             PropertyList<I, R>(instance, items, propertyName, null, null, null);
         }
         
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, EGUIListAddDelegate<I> onAdd, Func<I, bool> onDelete) where R : EGUIListItemRenderer<I>
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete) where R : ListItemRenderer<I>
         {
-            PropertyList<I, R>(instance, items, propertyName, null, onAdd, onDelete);
+            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete);
         }
         
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, EGUIListAddDelegate<I> onAdd, Func<I, bool> onDelete) where R : EGUIListItemRenderer<I>
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete) where R : ListItemRenderer<I>
         {
             var type = instance.GetType();
             var property = type.GetProperty(propertyName);
@@ -204,13 +204,13 @@ namespace Build1.UnityEGUI
             if (!ReferenceEquals(itemsGot, items))
                 throw new Exception("Items collections not the same.");
 
-            var list = new EGUIList<I, R>
+            var list = new List<I, R>
             {
                 Label = FormatCameCase(propertyName),
                 Items = itemsGot
             };
             list.onCreated += i => { property.SetValue(instance, i); };
-            list.onAdd += onAdd;
+            list.onAdd += onItemAdd;
             list.onDelete += onDelete;
             list.onItemRenderer += onItemRenderer;
             list.Build();
