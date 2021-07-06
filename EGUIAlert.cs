@@ -50,21 +50,19 @@ namespace Build1.UnityEGUI
 
         public static void Alert(string title, string text, string confirmText, string cancelText, string discardText, Action<AlertResult> onResult)
         {
+            onResult.Invoke(Alert(title, text, confirmText, cancelText, discardText));
+        }
+        
+        public static AlertResult Alert(string title, string text, string confirmText, string cancelText, string discardText)
+        {
             var res = EditorUtility.DisplayDialogComplex(title, text, confirmText, cancelText, discardText);
-            switch (res)
+            return res switch
             {
-                case 0:
-                    onResult.Invoke(AlertResult.Confirm);
-                    break;
-                case 1:
-                    onResult.Invoke(AlertResult.Cancel);
-                    break;
-                case 2:
-                    onResult.Invoke(AlertResult.Discard);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(res), res, null);
-            }
+                0 => AlertResult.Confirm,
+                1 => AlertResult.Cancel,
+                2 => AlertResult.Discard,
+                _ => throw new ArgumentOutOfRangeException(nameof(res), res, null)
+            };
         }
 
         public static T Alert<T>(string title, string text, Func<AlertResult, T> onResult)
