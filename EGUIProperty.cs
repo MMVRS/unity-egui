@@ -42,7 +42,7 @@ namespace Build1.UnityEGUI
 
         public static void Property(object instance, string value, string propertyName, StringRenderMode mode = StringRenderMode.Field, string[] items = null)
         {
-            PropertyBase(instance, value, propertyName, -1, value =>
+            PropertyBase(instance, value, propertyName, propertyName, -1, value =>
             {
                 switch (mode)
                 {
@@ -67,28 +67,20 @@ namespace Build1.UnityEGUI
         /*
          * Properties Numeric.
          */
-
+        
         public static void Property(object instance, int value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, int min = int.MinValue, int max = int.MaxValue)
         {
-            PropertyBase(instance, value, propertyName, -1, value =>
-            {
-                return mode switch
-                {
-                    NumericRenderMode.Field  => EditorGUILayout.IntField(value),
-                    NumericRenderMode.Slider => EditorGUILayout.IntSlider(value, min, max),
-                    _                        => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
-                };
-            });
+            Property(instance, value, propertyName, propertyName, mode, min, max);
         }
-
-        public static void Property(object instance, uint value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, uint min = uint.MinValue, uint max = uint.MaxValue)
+        
+        public static void Property(object instance, int value, string propertyName, string propertyDisplayName, NumericRenderMode mode = NumericRenderMode.Field, int min = int.MinValue, int max = int.MaxValue)
         {
-            PropertyBase(instance, value, propertyName, -1, value =>
+            PropertyBase(instance, value, propertyName, propertyDisplayName, -1, valueNew =>
             {
                 return mode switch
                 {
-                    NumericRenderMode.Field  => (uint)EditorGUILayout.IntField((int)value),
-                    NumericRenderMode.Slider => (uint)EditorGUILayout.IntSlider((int)value, (int)min, (int)max),
+                    NumericRenderMode.Field  => EditorGUILayout.IntField(valueNew),
+                    NumericRenderMode.Slider => EditorGUILayout.IntSlider(valueNew, min, max),
                     _                        => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
                 };
             });
@@ -100,14 +92,14 @@ namespace Build1.UnityEGUI
 
         public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null)
         {
-            var valueNew = PropertyBase(instance, value, propertyName, -1, valueImpl => EditorGUILayout.EnumPopup(valueImpl));
+            var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => EditorGUILayout.EnumPopup(valueImpl));
             if (!Equals(valueNew, value))
                 onChanged?.Invoke(valueNew, value);
         }
 
         public static void Property(object instance, Enum value, string propertyName, params object[] items)
         {
-            PropertyBase(instance, value, propertyName, -1, value =>
+            PropertyBase(instance, value, propertyName, propertyName, -1, value =>
             {
                 var index = Array.IndexOf(items, value);
                 index = EditorGUILayout.Popup(index, items.Select(i => FormatCameCase(i.ToString())).ToArray());
@@ -121,7 +113,7 @@ namespace Build1.UnityEGUI
 
         public static void Property(object instance, bool value, string propertyName, BooleanRenderMode mode = BooleanRenderMode.Toggle, int height = -1)
         {
-            PropertyBase(instance, value, propertyName, height, value =>
+            PropertyBase(instance, value, propertyName, propertyName, height, value =>
             {
                 switch (mode)
                 {
@@ -146,19 +138,21 @@ namespace Build1.UnityEGUI
          * Properties Base.
          */
 
-        private static T PropertyBase<T>(object instance, T value, string propertyName, int height, Func<T, T> onRender)
+        private static T PropertyBase<T>(object instance, T value, string propertyName, string propertyDisplayName, int height, Func<T, T> onRender)
         {
             var type = instance.GetType();
-            var label = Regex.Replace(propertyName, "(\\B[A-Z])", " $1");
-
+            var label = Regex.Replace(propertyDisplayName, "(\\B[A-Z])", " $1");
+            
             var property = type.GetProperty(propertyName);
             if (property == null)
                 throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
 
-            var valueGot = (T)property.GetValue(instance);
-            if (!Equals(value, valueGot))
-                throw new Exception("Values not equal.");
-
+            // Commented for optimization purposes.
+            // Lets see how it goes.
+            // var valueGot = (T)property.GetValue(instance);
+            // if (!Equals(value, valueGot))
+            //     throw new Exception("Values not equal.");
+            
             if (height != -1)
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.Height(height));
@@ -170,7 +164,7 @@ namespace Build1.UnityEGUI
                 GUILayout.Label(label, GUILayout.Width(PropertyLabelWidth));
             }
 
-            var valueNew = onRender.Invoke(valueGot);
+            var valueNew = onRender.Invoke(value);
 
             EditorGUILayout.EndHorizontal();
             

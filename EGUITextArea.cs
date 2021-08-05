@@ -18,6 +18,25 @@ namespace Build1.UnityEGUI
             if (newText != text)
                 onChanged?.Invoke(newText);
         }
+        
+        public static void TextField(string text, int height, Action<string> onChanged)
+        {
+            var newText = EditorGUILayout.TextField(text, GUILayout.Height(height));
+            if (newText != text)
+                onChanged?.Invoke(newText);
+        }
+        
+        public static void TextField(string text, int height, TextAnchor alignment, Action<string> onChanged)
+        {
+            var style = new GUIStyle(EditorStyles.textField)
+            {
+                alignment = alignment
+            };
+            
+            var newText = EditorGUILayout.TextField(text, style, GUILayout.Height(height));
+            if (newText != text)
+                onChanged?.Invoke(newText);
+        }
 
         public static void TextField(string text, out string controlName, Action<string> onChanged)
         {
@@ -25,7 +44,7 @@ namespace Build1.UnityEGUI
             GUI.SetNextControlName(controlName);
             TextField(text, onChanged);
         }
-        
+
         public static void TextField(string text, int height, TextAnchor alignment, out string controlName, Action<string> onChanged)
         {
             controlName = new System.Random().Next(100000).ToString();
