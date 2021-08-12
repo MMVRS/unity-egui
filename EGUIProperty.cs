@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Build1.UnityEGUI.List;
 using Build1.UnityEGUI.RenderModes;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,13 +17,13 @@ namespace Build1.UnityEGUI
     {
         public static int PropertyLabelWidth     { get; set; } = 200;
         public static int PropertyTextAreaHeight { get; set; } = 100;
-        
+
         private static readonly string[] BoolDropdownItems = { bool.FalseString, bool.TrueString };
-        
+
         /*
          * Property Set.
          */
-        
+
         public static void PropertySet<T>(object instance, T valueCurrent, string propertyName, T valueNew)
         {
             var type = instance.GetType();
@@ -32,10 +34,10 @@ namespace Build1.UnityEGUI
             var valueGot = (T)property.GetValue(instance);
             if (!Equals(valueCurrent, valueGot))
                 throw new Exception("Values not equal.");
-            
+
             property.SetValue(instance, valueNew);
         }
-        
+
         /*
          * Properties String.
          */
@@ -90,9 +92,37 @@ namespace Build1.UnityEGUI
          * Properties Enum.
          */
 
-        public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null)
+        public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null, EnumRenderingMode renderingMode = EnumRenderingMode.Enum)
         {
-            var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => EditorGUILayout.EnumPopup(valueImpl));
+            var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl =>
+            {
+                switch (renderingMode)
+                {
+                    case EnumRenderingMode.Enum:
+                        return EditorGUILayout.EnumPopup(valueImpl);
+
+                    case EnumRenderingMode.Flags:
+                        var description = new StringBuilder();
+                        foreach (var flag in System.Enum.GetValues(value.GetType()).Cast<Enum>())
+                        {
+                            if (value.HasFlag(flag))
+                            {
+                                description.Append(" ");
+                                description.Append(flag);
+                            }
+                        }
+
+                        return Horizontally(() =>
+                        {
+                            EditorGUILayout.LabelField(description.ToString());
+                            return EditorGUILayout.EnumFlagsField(valueImpl);
+                        });
+
+                    default:
+                        throw new Exception("Invalid enum value");
+                }
+            });
+
             if (!Equals(valueNew, value))
                 onChanged?.Invoke(valueNew, value);
         }
@@ -167,7 +197,7 @@ namespace Build1.UnityEGUI
             var valueNew = onRender.Invoke(value);
 
             EditorGUILayout.EndHorizontal();
-            
+
             property.SetValue(instance, valueNew);
 
             return valueNew;
@@ -181,13 +211,14 @@ namespace Build1.UnityEGUI
         {
             PropertyList<I, R>(instance, items, propertyName, null, null, null);
         }
-        
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete) where R : ListItemRenderer<I>
+
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, Func<I, bool> onFilter = null) where R : ListItemRenderer<I>
         {
-            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete);
+            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete, onFilter);
         }
-        
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete) where R : ListItemRenderer<I>
+
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, [CanBeNull] Func<I, bool> onFilter)
+            where R : ListItemRenderer<I>
         {
             var type = instance.GetType();
             var property = type.GetProperty(propertyName);
@@ -207,6 +238,7 @@ namespace Build1.UnityEGUI
             list.onAdd += onItemAdd;
             list.onDelete += onDelete;
             list.onItemRenderer += onItemRenderer;
+            list.onFilter += onFilter;
             list.Build();
         }
     }

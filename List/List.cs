@@ -21,6 +21,7 @@ namespace Build1.UnityEGUI.List
         public event ListItemAddDelegate<I> onAdd;
         public event Func<I, bool>          onDelete;
         public event Action<R>              onItemRenderer;
+        public event Func<I, bool>          onFilter;
 
         public List() { }
         public List(List<I> items) { Items = items; }
@@ -84,6 +85,11 @@ namespace Build1.UnityEGUI.List
 
             for (var i = 0; i < Items.Count; i++)
             {
+                if (onFilter?.Invoke(Items[i]) == false)
+                {
+                    continue;
+                }
+
                 var itemRenderer = (R)Activator.CreateInstance(typeof(R));
                 itemRenderer.Init(i, Items[i], Items);
                 itemRenderer.OnEGUI();
