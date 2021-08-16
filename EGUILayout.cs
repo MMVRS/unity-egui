@@ -19,6 +19,14 @@ namespace Build1.UnityEGUI
             EditorGUILayout.EndHorizontal();
         }
 
+        public static T Horizontally<T>(Func<T> onHorizontally)
+        {
+            EditorGUILayout.BeginHorizontal();
+            var value = onHorizontally.Invoke();
+            EditorGUILayout.EndHorizontal();
+            return value;
+        }
+
         public static void Horizontally(GUIStyle style, Action onHorizontally)
         {
             EditorGUILayout.BeginHorizontal(style);
