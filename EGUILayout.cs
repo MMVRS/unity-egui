@@ -18,20 +18,36 @@ namespace Build1.UnityEGUI
             onHorizontally?.Invoke();
             EditorGUILayout.EndHorizontal();
         }
+        
+        public static void Horizontally(GUIStyle style, Action onHorizontally)
+        {
+            EditorGUILayout.BeginHorizontal(style);
+            onHorizontally?.Invoke();
+            EditorGUILayout.EndHorizontal();
+        }
 
-        public static T Horizontally<T>(Func<T> onHorizontally)
+        public static TR Horizontally<TR>(Func<TR> onHorizontally)
         {
             EditorGUILayout.BeginHorizontal();
             var value = onHorizontally.Invoke();
             EditorGUILayout.EndHorizontal();
             return value;
         }
-
-        public static void Horizontally(GUIStyle style, Action onHorizontally)
+        
+        public static TR Horizontally<T1, TR>(Func<T1, TR> onHorizontally, T1 param01)
         {
-            EditorGUILayout.BeginHorizontal(style);
-            onHorizontally?.Invoke();
+            EditorGUILayout.BeginHorizontal();
+            var value = onHorizontally.Invoke(param01);
             EditorGUILayout.EndHorizontal();
+            return value;
+        }
+        
+        public static TR Horizontally<T1, T2, TR>(Func<T1, T2, TR> onHorizontally, T1 param01, T2 param02)
+        {
+            EditorGUILayout.BeginHorizontal();
+            var value = onHorizontally.Invoke(param01, param02);
+            EditorGUILayout.EndHorizontal();
+            return value;
         }
         
         /*
@@ -44,12 +60,36 @@ namespace Build1.UnityEGUI
             onVertically?.Invoke();
             EditorGUILayout.EndVertical();
         }
-
+        
         public static void Vertically(GUIStyle style, Action onVertically)
         {
             EditorGUILayout.BeginVertical(style);
             onVertically?.Invoke();
             EditorGUILayout.EndVertical();
+        }
+        
+        public static TR Vertically<TR>(Func<TR> onHorizontally)
+        {
+            EditorGUILayout.BeginVertical();
+            var value = onHorizontally.Invoke();
+            EditorGUILayout.EndVertical();
+            return value;
+        }
+        
+        public static TR Vertically<T1, TR>(Func<T1, TR> onHorizontally, T1 param01)
+        {
+            EditorGUILayout.BeginVertical();
+            var value = onHorizontally.Invoke(param01);
+            EditorGUILayout.EndVertical();
+            return value;
+        }
+        
+        public static TR Vertically<T1, T2, TR>(Func<T1, T2, TR> onHorizontally, T1 param01, T2 param02)
+        {
+            EditorGUILayout.BeginVertical();
+            var value = onHorizontally.Invoke(param01, param02);
+            EditorGUILayout.EndVertical();
+            return value;
         }
 
         /*

@@ -3,11 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Build1.UnityEGUI.List;
 using Build1.UnityEGUI.RenderModes;
-using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,12 +67,12 @@ namespace Build1.UnityEGUI
         /*
          * Properties Numeric.
          */
-        
+
         public static void Property(object instance, int value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, int min = int.MinValue, int max = int.MaxValue)
         {
             Property(instance, value, propertyName, propertyName, mode, min, max);
         }
-        
+
         public static void Property(object instance, int value, string propertyName, string propertyDisplayName, NumericRenderMode mode = NumericRenderMode.Field, int min = int.MinValue, int max = int.MaxValue)
         {
             PropertyBase(instance, value, propertyName, propertyDisplayName, -1, valueNew =>
@@ -92,31 +90,36 @@ namespace Build1.UnityEGUI
          * Properties Enum.
          */
 
-        public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null, EnumRenderingMode renderingMode = EnumRenderingMode.Enum)
+        public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null)
+        {
+            Property(instance, value, propertyName, EnumRenderMode.Enum, onChanged);
+        }
+
+        public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, Action<Enum, Enum> onChanged = null)
         {
             var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl =>
             {
-                switch (renderingMode)
+                switch (renderMode)
                 {
-                    case EnumRenderingMode.Enum:
+                    case EnumRenderMode.Enum:
                         return EditorGUILayout.EnumPopup(valueImpl);
 
-                    case EnumRenderingMode.Flags:
-                        var description = new StringBuilder();
-                        foreach (var flag in System.Enum.GetValues(value.GetType()).Cast<Enum>())
-                        {
-                            if (value.HasFlag(flag))
-                            {
-                                description.Append(" ");
-                                description.Append(flag);
-                            }
-                        }
+                    case EnumRenderMode.Flags:
 
-                        return Horizontally(() =>
-                        {
-                            EditorGUILayout.LabelField(description.ToString());
-                            return EditorGUILayout.EnumFlagsField(valueImpl);
-                        });
+                        var listFull = System.Enum.GetValues(valueImpl.GetType()).Cast<Enum>();
+                        var list = listFull.Where(valueImpl.HasFlag).ToList();
+                        var label = list.Count > 0 ? string.Join(" ", list) : "Nothing";
+
+                        var valueNewImpl = EditorGUILayout.EnumFlagsField(valueImpl);
+
+                        var positionLast = GUILayoutUtility.GetLastRect();
+                        var positionRect = new Rect(positionLast.x + 2, positionLast.y + 2, positionLast.width - 20, positionLast.height - 4);
+                        EditorGUI.DrawRect(positionRect, new Color(0.3176F, 0.3176F, 0.3176F));
+
+                        var position = new Rect(positionLast.x + 3, positionLast.y - 1, positionRect.width, positionLast.height);
+                        EditorGUI.LabelField(position, label);
+
+                        return valueNewImpl;
 
                     default:
                         throw new Exception("Invalid enum value");
@@ -172,7 +175,7 @@ namespace Build1.UnityEGUI
         {
             var type = instance.GetType();
             var label = Regex.Replace(propertyDisplayName, "(\\B[A-Z])", " $1");
-            
+
             var property = type.GetProperty(propertyName);
             if (property == null)
                 throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
@@ -182,7 +185,7 @@ namespace Build1.UnityEGUI
             // var valueGot = (T)property.GetValue(instance);
             // if (!Equals(value, valueGot))
             //     throw new Exception("Values not equal.");
-            
+
             if (height != -1)
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.Height(height));
@@ -217,7 +220,7 @@ namespace Build1.UnityEGUI
             PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete, onFilter);
         }
 
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, [CanBeNull] Func<I, bool> onFilter)
+        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, Func<I, bool> onFilter = null)
             where R : ListItemRenderer<I>
         {
             var type = instance.GetType();

@@ -86,9 +86,7 @@ namespace Build1.UnityEGUI.List
             for (var i = 0; i < Items.Count; i++)
             {
                 if (onFilter?.Invoke(Items[i]) == false)
-                {
                     continue;
-                }
 
                 var itemRenderer = (R)Activator.CreateInstance(typeof(R));
                 itemRenderer.Init(i, Items[i], Items);
