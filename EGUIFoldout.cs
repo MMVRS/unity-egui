@@ -11,7 +11,7 @@ namespace Build1.UnityEGUI
     {
         public static int       FoldoutH3FontSize  { get; set; } = 14;
         public static FontStyle FoldoutH3FontStyle { get; set; } = FontStyle.Bold;
-        public static Color     FoldoutH3Color     { get; set; } = Color.white;
+        public static Color     FoldoutH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         public static void Foldout(string title, FoldoutType type, ref bool foldout)
         {

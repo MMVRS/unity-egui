@@ -2,6 +2,7 @@
 
 using System;
 using Build1.UnityEGUI.Types;
+using UnityEditor;
 using UnityEngine;
 
 namespace Build1.UnityEGUI
@@ -12,15 +13,15 @@ namespace Build1.UnityEGUI
 
         public static int       TitleH1FontSize  { get; set; } = 20;
         public static FontStyle TitleH1FontStyle { get; set; } = FontStyle.Bold;
-        public static Color     TitleH1Color     { get; set; } = Color.white;
+        public static Color     TitleH1Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         public static int       TitleH2FontSize  { get; set; } = 18;
         public static FontStyle TitleH2FontStyle { get; set; } = FontStyle.Bold;
-        public static Color     TitleH2Color     { get; set; } = Color.white;
+        public static Color     TitleH2Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         public static int       TitleH3FontSize  { get; set; } = 14;
         public static FontStyle TitleH3FontStyle { get; set; } = FontStyle.Bold;
-        public static Color     TitleH3Color     { get; set; } = Color.white;
+        public static Color     TitleH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         public static Color LabelErrorColor { get; set; } = Color.red;
 

@@ -92,40 +92,12 @@ namespace Build1.UnityEGUI
 
         public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null)
         {
-            Property(instance, value, propertyName, EnumRenderMode.Enum, onChanged);
+            Property(instance, value, propertyName, EnumRenderMode.DropDown, onChanged);
         }
 
         public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, Action<Enum, Enum> onChanged = null)
         {
-            var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl =>
-            {
-                switch (renderMode)
-                {
-                    case EnumRenderMode.Enum:
-                        return EditorGUILayout.EnumPopup(valueImpl);
-
-                    case EnumRenderMode.Flags:
-
-                        var listFull = System.Enum.GetValues(valueImpl.GetType()).Cast<Enum>();
-                        var list = listFull.Where(valueImpl.HasFlag).ToList();
-                        var label = list.Count > 0 ? string.Join(" ", list) : "Nothing";
-
-                        var valueNewImpl = EditorGUILayout.EnumFlagsField(valueImpl);
-
-                        var positionLast = GUILayoutUtility.GetLastRect();
-                        var positionRect = new Rect(positionLast.x + 2, positionLast.y + 2, positionLast.width - 20, positionLast.height - 4);
-                        EditorGUI.DrawRect(positionRect, new Color(0.3176F, 0.3176F, 0.3176F));
-
-                        var position = new Rect(positionLast.x + 3, positionLast.y - 1, positionRect.width, positionLast.height);
-                        EditorGUI.LabelField(position, label);
-
-                        return valueNewImpl;
-
-                    default:
-                        throw new Exception("Invalid enum value");
-                }
-            });
-
+            var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => Enum(valueImpl, renderMode));
             if (!Equals(valueNew, value))
                 onChanged?.Invoke(valueNew, value);
         }

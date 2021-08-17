@@ -4,8 +4,8 @@ namespace Build1.UnityEGUI.RenderModes
 {
     public enum EnumRenderMode
     {
-        Enum  = 1,
-        Flags = 2
+        DropDown   = 1,
+        Checkboxes = 2
     }
 }
 
