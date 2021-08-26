@@ -63,6 +63,16 @@ namespace Build1.UnityEGUI
             if (clicked)
                 onClicked.Invoke();
         }
+        
+        public static void Button(string label, int width, float height, RectOffset padding, Action onClicked)
+        {
+            var style = GUI.skin.button;
+            style.padding = padding;
+            
+            var clicked = GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
+            if (clicked)
+                onClicked.Invoke();
+        }
 
         /*
          * Callback with Parameter.
@@ -82,9 +92,26 @@ namespace Build1.UnityEGUI
                 onClicked.Invoke(param);
         }
 
+        public static void Button<T>(string label, float height, Action<T> onClicked, T param)
+        {
+            var clicked = GUILayout.Button(label, GUILayout.Height(height));
+            if (clicked)
+                onClicked.Invoke(param);
+        }
+        
         public static void Button<T>(string label, int width, float height, Action<T> onClicked, T param)
         {
             var clicked = GUILayout.Button(label, GUILayout.Width(width), GUILayout.Height(height));
+            if (clicked)
+                onClicked.Invoke(param);
+        }
+        
+        public static void Button<T>(string label, int width, float height, RectOffset padding, Action<T> onClicked, T param)
+        {
+            var style = GUI.skin.button;
+            style.padding = padding;
+            
+            var clicked = GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
             if (clicked)
                 onClicked.Invoke(param);
         }

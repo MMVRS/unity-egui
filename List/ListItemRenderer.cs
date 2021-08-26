@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Build1.UnityEGUI.List
 {
@@ -45,6 +46,21 @@ namespace Build1.UnityEGUI.List
         protected void SetItem(I item)
         {
             _listItems[Index] = item;
+        }
+
+        protected void RenderUpButton()
+        {
+            EGUI.Button("↑", 30, EGUI.ButtonHeight02, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.Up);
+        }
+
+        protected void RenderDownButton()
+        {
+            EGUI.Button("↓", 30, EGUI.ButtonHeight02, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.Down);
+        }
+
+        protected void RenderDeleteButton()
+        {
+            EGUI.Button("×", 30, EGUI.ButtonHeight02, new RectOffset(1, 1, 0, 2), SetAction, ListItemAction.Delete);
         }
     }
 }

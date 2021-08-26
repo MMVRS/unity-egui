@@ -64,7 +64,7 @@ namespace Build1.UnityEGUI.List
                 EGUI.Horizontally(() =>
                 {
                     EGUI.Space();
-                    EGUI.Button("+", 30, 20, TextAnchor.UpperCenter, Add);
+                    EGUI.Button("+", 30, 22, new RectOffset(0, 0, 0, 2), Add);
                 });
             }
         }
