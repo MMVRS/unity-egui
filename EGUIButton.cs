@@ -19,6 +19,13 @@ namespace Build1.UnityEGUI
         public static bool Button(string label, int width)               { return GUILayout.Button(label, GUILayout.Width(width)); }
         public static bool Button(string label, float height)            { return GUILayout.Button(label, GUILayout.Height(height)); }
         public static bool Button(string label, int width, float height) { return GUILayout.Button(label, GUILayout.Width(width), GUILayout.Height(height)); }
+        
+        public static bool Button(string label, int width, float height, RectOffset padding)
+        {
+            var style = GUI.skin.button;
+            style.padding = padding;
+            return GUILayout.Button(label, style, GUILayout.Width(width), GUILayout.Height(height));
+        }
 
         /*
          * Out.
