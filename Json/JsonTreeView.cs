@@ -82,7 +82,15 @@ namespace Build1.UnityEGUI.Json
                     break;
                 }
 
+                case JTokenType.Boolean:
+                {
+                    var value = node.ToString().ToLower();
+                    items.Add(new TreeViewItem { id = _id++, depth = depth, displayName = $"{name}: {value}" });
+                    break;
+                }
+                    
                 case JTokenType.Integer:
+                case JTokenType.Float:
                 {
                     items.Add(new TreeViewItem { id = _id++, depth = depth, displayName = $"{name}: {node}" });
                     break;
