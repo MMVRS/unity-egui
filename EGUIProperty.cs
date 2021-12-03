@@ -40,7 +40,18 @@ namespace Build1.UnityEGUI
          * Properties String.
          */
 
-        public static void Property(object instance, string value, string propertyName, StringRenderMode mode = StringRenderMode.Field, string[] items = null)
+        public static void Property(object instance, string value, string propertyName, StringRenderMode mode = StringRenderMode.Field)
+        {
+            Property(instance, value, propertyName, mode, PropertyTextAreaHeight, null);
+        }
+        
+        
+        public static void Property(object instance, string value, string propertyName, StringRenderMode mode, string[] items)
+        {
+            Property(instance, value, propertyName, mode, PropertyTextAreaHeight, items);
+        }
+        
+        public static void Property(object instance, string value, string propertyName, StringRenderMode mode, int height, string[] items = null)
         {
             PropertyBase(instance, value, propertyName, propertyName, -1, value =>
             {
@@ -50,7 +61,7 @@ namespace Build1.UnityEGUI
                         return GUILayout.TextField(value);
 
                     case StringRenderMode.Area:
-                        return GUILayout.TextArea(value, GUILayout.Height(PropertyTextAreaHeight));
+                        return GUILayout.TextArea(value, GUILayout.Height(height));
 
                     case StringRenderMode.DropDown:
                         items ??= new string[] { };
