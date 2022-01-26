@@ -22,6 +22,7 @@ namespace Build1.UnityEGUI.List
         public event Func<I, bool>          onDelete;
         public event Action<R>              onItemRenderer;
         public event Func<I, bool>          onFilter;
+        public event Action<I>              onView;
 
         public List() { }
         public List(List<I> items) { Items = items; }
@@ -132,6 +133,16 @@ namespace Build1.UnityEGUI.List
 
                     if (onDelete.Invoke(renderer.Item))
                         Items.Remove(renderer.Item);
+                    break;
+
+                case ListItemAction.View:
+                    if (onView == null)
+                    {
+                        EGUI.LogError("EGUIList: View handler not specified.");
+                        break;
+                    }
+
+                    onView.Invoke(renderer.Item);
                     break;
             }
         }

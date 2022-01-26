@@ -48,6 +48,11 @@ namespace Build1.UnityEGUI.List
             _listItems[Index] = item;
         }
 
+        protected void RenderViewButton()
+        {
+            EGUI.Button("View", 50, EGUI.ButtonHeight02, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.View);
+        }
+
         protected void RenderUpButton()
         {
             EGUI.Button("↑", 30, EGUI.ButtonHeight02, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.Up);

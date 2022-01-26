@@ -36,6 +36,17 @@ namespace Build1.UnityEGUI
             property.SetValue(instance, valueNew);
         }
 
+        public static void PropertySet<T>(object instance, string propertyName, T valueNew)
+        {
+            var type = instance.GetType();
+            var property = type.GetProperty(propertyName);
+            if (property == null)
+                throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
+
+            property.SetValue(instance, valueNew);
+        }
+
+
         /*
          * Properties String.
          */
@@ -81,6 +92,24 @@ namespace Build1.UnityEGUI
                 {
                     NumericRenderMode.Field  => EditorGUILayout.IntField(valueNew),
                     NumericRenderMode.Slider => EditorGUILayout.IntSlider(valueNew, min, max),
+                    _                        => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                };
+            });
+        }
+
+        public static void Property(object instance, float value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, float min = float.MinValue, float max = float.MaxValue)
+        {
+            Property(instance, value, propertyName, propertyName, mode, min, max);
+        }
+
+        public static void Property(object instance, float value, string propertyName, string propertyDisplayName, NumericRenderMode mode = NumericRenderMode.Field, float min = float.MinValue, float max = float.MaxValue)
+        {
+            PropertyBase(instance, value, propertyName, propertyDisplayName, -1, valueNew =>
+            {
+                return mode switch
+                {
+                    NumericRenderMode.Field  => EditorGUILayout.FloatField(valueNew),
+                    NumericRenderMode.Slider => EditorGUILayout.Slider(valueNew, min, max),
                     _                        => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
                 };
             });
@@ -184,15 +213,32 @@ namespace Build1.UnityEGUI
 
         public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName) where R : ListItemRenderer<I>
         {
-            PropertyList<I, R>(instance, items, propertyName, null, null, null);
+            PropertyList<I, R>(instance, items, propertyName, null, null);
         }
 
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, Func<I, bool> onFilter = null) where R : ListItemRenderer<I>
+        public static void PropertyList<I, R>(
+            object instance,
+            IList<I> items,
+            string propertyName,
+            ListItemAddDelegate<I> onItemAdd,
+            Func<I, bool> onDelete,
+            Func<I, bool> onFilter = null,
+            Action<I> onView = null
+        ) where R : ListItemRenderer<I>
         {
-            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete, onFilter);
+            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete, onFilter, onView);
         }
 
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName, Action<R> onItemRenderer, ListItemAddDelegate<I> onItemAdd, Func<I, bool> onDelete, Func<I, bool> onFilter = null)
+        public static void PropertyList<I, R>(
+            object instance,
+            IList<I> items,
+            string propertyName,
+            Action<R> onItemRenderer,
+            ListItemAddDelegate<I> onItemAdd,
+            Func<I, bool> onDelete,
+            Func<I, bool> onFilter = null,
+            Action<I> onView = null
+        )
             where R : ListItemRenderer<I>
         {
             var type = instance.GetType();
@@ -214,6 +260,7 @@ namespace Build1.UnityEGUI
             list.onDelete += onDelete;
             list.onItemRenderer += onItemRenderer;
             list.onFilter += onFilter;
+            list.onView += onView;
             list.Build();
         }
     }
