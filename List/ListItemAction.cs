@@ -7,7 +7,8 @@ namespace Build1.UnityEGUI.List
         None   = 0,
         Up     = 1,
         Down   = 2,
-        Delete = 3
+        Delete = 3,
+        View   = 4,
     }
 }
 
