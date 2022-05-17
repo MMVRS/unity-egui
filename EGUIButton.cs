@@ -10,6 +10,8 @@ namespace Build1.UnityEGUI
         public static float ButtonHeight01 { get; set; } = 30;
         public static float ButtonHeight02 { get; set; } = 25;
         public static float ButtonHeight03 { get; set; } = 22;
+        public static float ButtonHeight04 { get; set; } = 20;
+        public static float ButtonHeight05 { get; set; } = 18;
 
         /*
          * Return.

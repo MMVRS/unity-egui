@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Collections.Generic;
+using Build1.UnityEGUI.Other;
 using Build1.UnityEGUI.Types;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +15,8 @@ namespace Build1.UnityEGUI
         public static FontStyle FoldoutH3FontStyle { get; set; } = FontStyle.Bold;
         public static Color     FoldoutH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
+        private static readonly Dictionary<string, FoldInfo> _infos = new();
+        
         public static void Foldout(string title, FoldoutType type, ref bool foldout)
         {
             var fontSize = type switch
@@ -51,6 +55,23 @@ namespace Build1.UnityEGUI
                 contentOffset = new Vector2(3, 0)
             };
             foldout = EditorGUILayout.Foldout(foldout, title, foldoutStyle);
+        }
+
+        public static void GetFoldInfo(object instance, int id, out FoldInfo info)
+        {
+            info = GetFoldInfo(instance, id);
+        }
+        
+        public static FoldInfo GetFoldInfo(object instance, int id)
+        {
+            var key = $"{instance.GetType().FullName}_{id}";
+            if (_infos.TryGetValue(key, out var folds)) 
+                return folds;
+            
+            folds = new FoldInfo();
+            _infos.Add(key, folds);
+            
+            return folds;
         }
     }
 }
