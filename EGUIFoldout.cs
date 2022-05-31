@@ -57,20 +57,33 @@ namespace Build1.UnityEGUI
             foldout = EditorGUILayout.Foldout(foldout, title, foldoutStyle);
         }
 
+        public static void GetFoldInfo(object instance, out FoldInfo info)
+        {
+            info = GetFoldInfo(instance);
+        }
+        
         public static void GetFoldInfo(object instance, int id, out FoldInfo info)
         {
             info = GetFoldInfo(instance, id);
         }
         
+        public static FoldInfo GetFoldInfo(object instance)
+        {
+            return GetFoldInfo(instance.GetType().FullName);
+        }
+        
         public static FoldInfo GetFoldInfo(object instance, int id)
         {
-            var key = $"{instance.GetType().FullName}_{id}";
+            return GetFoldInfo($"{instance.GetType().FullName}_{id}");
+        }
+        
+        public static FoldInfo GetFoldInfo(string key)
+        {
             if (_infos.TryGetValue(key, out var folds)) 
                 return folds;
             
             folds = new FoldInfo();
             _infos.Add(key, folds);
-            
             return folds;
         }
     }

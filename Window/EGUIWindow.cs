@@ -70,6 +70,24 @@ namespace Build1.UnityEGUI.Window
             return window;
         }
 
+        public static T Create<T>(string title) where T : EGUIWindow
+        {
+            var window = CreateWindow<T>(title);
+            window.Show();
+            return window;
+        }
+
+        public static T Create<T>(string title, int width, int height, bool show, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
+        {
+            var window = CreateWindow<T>(title);
+            window.position = GetWindowRect(width, height, anchor);
+            
+            if (show)
+                window.Show();
+            
+            return window;
+        }
+
         public static Rect GetWindowRect(int width, int height, EGUIWindowAnchor anchor)
         {
             switch (anchor)

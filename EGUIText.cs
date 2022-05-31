@@ -119,6 +119,13 @@ namespace Build1.UnityEGUI
             GUILayout.Label(text, style);
         }
 
+        public static void Label(string text, float height, FontStyle fontStyle)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.fontStyle = fontStyle;
+            GUILayout.Label(text, style, GUILayout.Height(height));
+        }
+        
         public static void Label(string text, float height, bool stretchedWidth, TextAnchor alignment)
         {
             var style = LabelBuildStyle(LabelType.Default);

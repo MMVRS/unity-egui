@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Build1.UnityEGUI.List;
+using Build1.UnityEGUI.PropertyList;
+using Build1.UnityEGUI.PropertyList.ItemRenderers;
+using Build1.UnityEGUI.PropertyList.Windows;
 using Build1.UnityEGUI.RenderModes;
+using Build1.UnityEGUI.Window;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,6 +24,16 @@ namespace Build1.UnityEGUI
         /*
          * Property Set.
          */
+        
+        public static void PropertySet<T>(object instance, string propertyName, T valueNew)
+        {
+            var type = instance.GetType();
+            var property = type.GetProperty(propertyName);
+            if (property == null)
+                throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
+
+            property.SetValue(instance, valueNew);
+        }
 
         public static void PropertySet<T>(object instance, T valueCurrent, string propertyName, T valueNew)
         {
@@ -36,17 +49,6 @@ namespace Build1.UnityEGUI
             property.SetValue(instance, valueNew);
         }
 
-        public static void PropertySet<T>(object instance, string propertyName, T valueNew)
-        {
-            var type = instance.GetType();
-            var property = type.GetProperty(propertyName);
-            if (property == null)
-                throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
-
-            property.SetValue(instance, valueNew);
-        }
-
-
         /*
          * Properties String.
          */
@@ -55,13 +57,13 @@ namespace Build1.UnityEGUI
         {
             Property(instance, value, propertyName, mode, PropertyTextAreaHeight, null);
         }
-        
-        
+
+
         public static void Property(object instance, string value, string propertyName, StringRenderMode mode, string[] items)
         {
             Property(instance, value, propertyName, mode, PropertyTextAreaHeight, items);
         }
-        
+
         public static void Property(object instance, string value, string propertyName, StringRenderMode mode, int height, string[] items = null)
         {
             PropertyBase(instance, value, propertyName, propertyName, -1, value =>
@@ -222,35 +224,12 @@ namespace Build1.UnityEGUI
          * Properties List.
          */
 
-        public static void PropertyList<I, R>(object instance, IList<I> items, string propertyName) where R : ListItemRenderer<I>
+        public static PropertyList<string> PropertyList(object instance, IList<string> items, string propertyName)
         {
-            PropertyList<I, R>(instance, items, propertyName, null, null);
+            return PropertyList<string>(instance, items, propertyName).ItemRenderer<StringItemRenderer>();
         }
-
-        public static void PropertyList<I, R>(
-            object instance,
-            IList<I> items,
-            string propertyName,
-            ListItemAddDelegate<I> onItemAdd,
-            Func<I, bool> onDelete,
-            Func<I, bool> onFilter = null,
-            Action<I> onView = null
-        ) where R : ListItemRenderer<I>
-        {
-            PropertyList<I, R>(instance, items, propertyName, null, onItemAdd, onDelete, onFilter, onView);
-        }
-
-        public static void PropertyList<I, R>(
-            object instance,
-            IList<I> items,
-            string propertyName,
-            Action<R> onItemRenderer,
-            ListItemAddDelegate<I> onItemAdd,
-            Func<I, bool> onDelete,
-            Func<I, bool> onFilter = null,
-            Action<I> onView = null
-        )
-            where R : ListItemRenderer<I>
+        
+        public static PropertyList<I> PropertyList<I>(object instance, IList<I> items, string propertyName)
         {
             var type = instance.GetType();
             var property = type.GetProperty(propertyName);
@@ -261,18 +240,10 @@ namespace Build1.UnityEGUI
             if (!ReferenceEquals(itemsGot, items))
                 throw new Exception("Items collections not the same.");
 
-            var list = new List<I, R>
-            {
-                Label = FormatCameCase(propertyName),
-                Items = itemsGot
-            };
-            list.onCreated += i => { property.SetValue(instance, i); };
-            list.onAdd += onItemAdd;
-            list.onDelete += onDelete;
-            list.onItemRenderer += onItemRenderer;
-            list.onFilter += onFilter;
-            list.onView += onView;
-            list.Build();
+            var list = new PropertyList<I>(FormatCameCase(propertyName), itemsGot);
+            list.OnCreate(i => { property.SetValue(instance, i); });
+
+            return list;
         }
     }
 }

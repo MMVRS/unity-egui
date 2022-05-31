@@ -3,33 +3,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Build1.UnityEGUI.List
+namespace Build1.UnityEGUI.PropertyList
 {
-    public abstract class ListItemRenderer<I>
+    public abstract class PropertyListItemRenderer<I>
     {
-        public int            Index  { get; private set; }
-        public I              Item   { get; private set; }
-        public ListItemAction Action { get; private set; } = ListItemAction.None;
+        public I Item { get; private set; }
+        
+        internal PropertyListItemAction Action { get; private set; } = PropertyListItemAction.None;
+        
+        protected string           Title { get; private set; }   
+        protected int              Index { get; private set; }
+        protected IReadOnlyList<I> Items => _items;
 
-        protected IReadOnlyList<I> ListItems => _listItems;
-
-        private List<I> _listItems;
+        private List<I> _items;
 
         /*
-         * Public.
+         * Internal.
          */
 
-        public void Init(int index, I item, List<I> listItems)
+        internal void Init(string title, int index, I item, List<I> items)
         {
-            _listItems = listItems;
+            Title = title;
+            Item = item;
             Index = index;
-            Item = item;
-        }
 
-        public void OnEGUI(I item)
-        {
-            Item = item;
-            OnEGUI();
+            _items = items;
         }
 
         public abstract void OnEGUI();
@@ -37,17 +35,21 @@ namespace Build1.UnityEGUI.List
         /*
          * Protected.
          */
-
-        protected void SetAction(ListItemAction action)
+        
+        protected void SetItem(I item)
+        {
+            _items[Index] = item;
+        }
+        
+        /*
+         * Private.
+         */
+        
+        private void SetAction(PropertyListItemAction action)
         {
             Action = action;
         }
 
-        protected void SetItem(I item)
-        {
-            _listItems[Index] = item;
-        }
-        
         /*
          * View Button.
          */
@@ -56,72 +58,72 @@ namespace Build1.UnityEGUI.List
         {
             RenderViewButton(EGUI.ButtonHeight02);
         }
-        
+
         protected void RenderViewButtonThin()
         {
             RenderViewButton(EGUI.ButtonHeight05);
         }
-        
+
         protected void RenderViewButton(float height)
         {
-            EGUI.Button("View", 50, height, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.View);
+            EGUI.Button("...", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Details);
         }
 
         /*
          * Up Button.
          */
-        
+
         protected void RenderUpButton()
         {
             RenderUpButton(EGUI.ButtonHeight02);
         }
-        
+
         protected void RenderUpButtonThin()
         {
             RenderUpButton(EGUI.ButtonHeight05);
         }
-        
+
         protected void RenderUpButton(float height)
         {
-            EGUI.Button("↑", 30, height, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.Up);
+            EGUI.Button("↑", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Up);
         }
-        
+
         /*
          * Down Button.
          */
-        
+
         protected void RenderDownButton()
         {
             RenderDownButton(EGUI.ButtonHeight02);
         }
-        
+
         protected void RenderDownButtonThin()
         {
             RenderDownButton(EGUI.ButtonHeight05);
         }
-        
+
         protected void RenderDownButton(float height)
         {
-            EGUI.Button("↓", 30, height, new RectOffset(2, 0, 0, 0), SetAction, ListItemAction.Down);
+            EGUI.Button("↓", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Down);
         }
 
         /*
          * Delete Button.
          */
-        
+
         protected void RenderDeleteButton()
         {
             RenderDeleteButton(EGUI.ButtonHeight02);
         }
-        
+
         protected void RenderDeleteButtonThin()
         {
             RenderDeleteButton(EGUI.ButtonHeight05);
         }
-        
+
         protected void RenderDeleteButton(float height)
         {
-            EGUI.Button("×", 30, height, new RectOffset(1, 1, 0, 2), SetAction, ListItemAction.Delete);
+            EGUI.Button("×", 30, height, new RectOffset(1, 1, 0, 2), SetAction, PropertyListItemAction.Delete);
         }
     }
 }

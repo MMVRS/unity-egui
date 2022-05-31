@@ -1,16 +1,16 @@
 #if UNITY_EDITOR
 
-using System;
+using UnityEngine;
 
-namespace Build1.UnityEGUI.List.ItemRenderers
+namespace Build1.UnityEGUI.PropertyList.ItemRenderers
 {
-    public sealed class EnumItemRenderer<T> : ListItemRenderer<T> where T : Enum
+    public sealed class StringItemRenderer : PropertyListItemRenderer<string>
     {
         public override void OnEGUI()
         {
             EGUI.Horizontally(() =>
             {
-                EGUI.Enum(Item, (int)EGUI.ButtonHeight02, value => { SetItem((T)value); });
+                EGUI.TextField(Item, (int)EGUI.ButtonHeight02, TextAnchor.MiddleLeft, SetItem);
                 RenderUpButton();
                 RenderDownButton();
                 RenderDeleteButton();
