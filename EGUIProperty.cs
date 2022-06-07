@@ -53,7 +53,6 @@ namespace Build1.UnityEGUI
             Property(instance, value, propertyName, mode, PropertyTextAreaHeight, null);
         }
 
-
         public static void Property(object instance, string value, string propertyName, StringRenderMode mode, string[] items)
         {
             Property(instance, value, propertyName, mode, PropertyTextAreaHeight, items);
@@ -197,8 +196,11 @@ namespace Build1.UnityEGUI
 
             var property = type.GetProperty(propertyName);
             if (property == null)
-                throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
-
+            {
+                LogError($"Instance property not found. Instance: [{instance.GetType().Name}] Property: {propertyName}");
+                return value;
+            }
+            
             // Commented for optimization purposes.
             // Lets see how it goes.
             // var valueGot = (T)property.GetValue(instance);
