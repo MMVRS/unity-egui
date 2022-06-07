@@ -2,7 +2,7 @@
 
 namespace Build1.UnityEGUI.PropertyList
 {
-    internal enum PropertyListItemAction
+    public enum PropertyListItemAction
     {
         None    = 0,
         Up      = 1,

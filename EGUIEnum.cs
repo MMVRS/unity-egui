@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Build1.UnityEGUI.Extensions;
 using Build1.UnityEGUI.RenderModes;
@@ -11,23 +12,27 @@ namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
-        public static Enum Enum(Enum value, EnumRenderMode mode = EnumRenderMode.DropDown)
+        public static Enum Enum(Enum value, EnumRenderMode mode = EnumRenderMode.DropDown, int lineSize = 0, float height = 0)
         {
             return mode switch
             {
-                EnumRenderMode.DropDown   => RenderEnumDropDown(value),
-                EnumRenderMode.Checkboxes => RenderEnumCheckboxes(value),
-                _                         => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                EnumRenderMode.DropDown            => RenderEnumDropDown(value),
+                EnumRenderMode.Checkboxes          => RenderEnumCheckboxes(value),
+                EnumRenderMode.ButtonsBar          => RenderEnumButtonsBar(value),
+                EnumRenderMode.ButtonsBarMultiline => RenderEnumButtonsBarMultiline(value, lineSize, height),
+                _                                  => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
             };
         }
         
-        public static void Enum(ref Enum value, EnumRenderMode mode = EnumRenderMode.DropDown)
+        public static void Enum(ref Enum value, EnumRenderMode mode = EnumRenderMode.DropDown, int lineSize = 0, float height = 0)
         {
             value = mode switch
             {
-                EnumRenderMode.DropDown   => RenderEnumDropDown(value),
-                EnumRenderMode.Checkboxes => RenderEnumCheckboxes(value),
-                _                         => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                EnumRenderMode.DropDown            => RenderEnumDropDown(value),
+                EnumRenderMode.Checkboxes          => RenderEnumCheckboxes(value),
+                EnumRenderMode.ButtonsBar          => RenderEnumButtonsBar(value),
+                EnumRenderMode.ButtonsBarMultiline => RenderEnumButtonsBarMultiline(value, lineSize, height),
+                _                                  => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
             };
         }
 
@@ -42,6 +47,7 @@ namespace Build1.UnityEGUI
             {
                 EnumRenderMode.DropDown   => RenderEnumDropDown(value),
                 EnumRenderMode.Checkboxes => RenderEnumCheckboxes(value),
+                EnumRenderMode.ButtonsBar => RenderEnumButtonsBar(value),
                 _                         => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
             };
 
@@ -137,6 +143,44 @@ namespace Build1.UnityEGUI
             EditorGUI.LabelField(position, label);
 
             return valueNewImpl;
+        }
+
+        private static Enum RenderEnumButtonsBar(Enum value)
+        {
+            var values = System.Enum.GetValues(value.GetType()).Cast<Enum>().ToList();
+            var valuesStrings = new List<string>(values.Count);
+
+            foreach (var enumValue in values)
+                valuesStrings.Add(enumValue.ToString());
+
+            var index = values.IndexOf(value);
+            var indexNew = GUILayout.Toolbar(index, valuesStrings.ToArray(), GUILayout.Height(ButtonHeight02));
+            if (indexNew != index)
+                return values[indexNew];
+            
+            return value;
+        }
+
+        private static Enum RenderEnumButtonsBarMultiline(Enum value, int lineSize, float height)
+        {
+            var values = System.Enum.GetValues(value.GetType()).Cast<Enum>().ToList();
+            var valuesStrings = new List<string>(values.Count);
+
+            foreach (var enumValue in values)
+                valuesStrings.Add(enumValue.ToString());
+
+            var cellStyle = new GUIStyle(GUI.skin.button)
+            {
+                padding = new RectOffset(10, 10, 0, 0),
+                fixedHeight = height > 0 ? height : ButtonHeight02
+            };
+
+            var index = values.IndexOf(value);
+            var indexNew = GUILayout.SelectionGrid(index, valuesStrings.ToArray(), lineSize, cellStyle);
+            if (indexNew != index)
+                return values[indexNew];
+            
+            return value;
         }
     }
 }

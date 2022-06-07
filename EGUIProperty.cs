@@ -1,14 +1,9 @@
 #if UNITY_EDITOR
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Build1.UnityEGUI.PropertyList;
-using Build1.UnityEGUI.PropertyList.ItemRenderers;
-using Build1.UnityEGUI.PropertyList.Windows;
 using Build1.UnityEGUI.RenderModes;
-using Build1.UnityEGUI.Window;
 using UnityEditor;
 using UnityEngine;
 
@@ -131,26 +126,36 @@ namespace Build1.UnityEGUI
         /*
          * Properties Enum.
          */
-
+        
         public static void Property(object instance, Enum value, string propertyName, Action<Enum, Enum> onChanged = null)
         {
             Property(instance, value, propertyName, EnumRenderMode.DropDown, onChanged);
         }
 
-        public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, Action<Enum, Enum> onChanged = null)
+        public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, Action<Enum, Enum> onChanged)
         {
             var valueNew = PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => Enum(valueImpl, renderMode));
             if (!Equals(valueNew, value))
                 onChanged?.Invoke(valueNew, value);
         }
 
-        public static void Property(object instance, Enum value, string propertyName, params object[] items)
+        public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => Enum(valueImpl, renderMode));
+        }
+        
+        public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, int lineSize, float height)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => Enum(valueImpl, renderMode, lineSize, height));
+        }
+        
+        public static void Property(object instance, Enum value, string propertyName, params Enum[] items)
         {
             PropertyBase(instance, value, propertyName, propertyName, -1, value =>
             {
                 var index = Array.IndexOf(items, value);
                 index = EditorGUILayout.Popup(index, items.Select(i => FormatCameCase(i.ToString())).ToArray());
-                return (Enum)items[index];
+                return items[index];
             });
         }
 
@@ -218,32 +223,6 @@ namespace Build1.UnityEGUI
             property.SetValue(instance, valueNew);
 
             return valueNew;
-        }
-
-        /*
-         * Properties List.
-         */
-
-        public static PropertyList<string> PropertyList(object instance, IList<string> items, string propertyName)
-        {
-            return PropertyList<string>(instance, items, propertyName).ItemRenderer<StringItemRenderer>();
-        }
-        
-        public static PropertyList<I> PropertyList<I>(object instance, IList<I> items, string propertyName)
-        {
-            var type = instance.GetType();
-            var property = type.GetProperty(propertyName);
-            if (property == null)
-                throw new Exception($"Property [{propertyName}] not found for [{type.FullName}].");
-
-            var itemsGot = (List<I>)property.GetValue(instance);
-            if (!ReferenceEquals(itemsGot, items))
-                throw new Exception("Items collections not the same.");
-
-            var list = new PropertyList<I>(FormatCameCase(propertyName), itemsGot);
-            list.OnCreate(i => { property.SetValue(instance, i); });
-
-            return list;
         }
     }
 }

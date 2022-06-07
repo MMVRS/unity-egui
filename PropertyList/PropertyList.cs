@@ -3,9 +3,8 @@
 using System;
 using System.Collections.Generic;
 using Build1.UnityEGUI.PropertyList.ItemRenderers;
-using Build1.UnityEGUI.PropertyList.Windows;
+using Build1.UnityEGUI.PropertyWindow;
 using Build1.UnityEGUI.Types;
-using Build1.UnityEGUI.Window;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,21 +15,34 @@ namespace Build1.UnityEGUI.PropertyList
         internal LayoutType LayoutType { get; set; } = LayoutType.Vertical;
         internal string     Label      { get; set; }
         internal List<I>    Items      { get; set; }
-        internal int        CountMax   { get; set; } = 100;
         internal int        Padding    { get; set; } = 10;
 
         private Type _itemRendererType;
         private Type _windowRendererType;
 
-        private PropertyListAddBehavior _addBehavior = PropertyListAddBehavior.Default;
+        private string    _title;
+        private FontStyle _titleStyle     = FontStyle.Normal;
+        private bool      _titleShow      = true;
+        private bool      _titleShowCount = true;
 
-        private Action<List<I>>      _onCreate;
-        private Func<I, string>      _onItemTitle;
-        private Func<Tuple<bool, I>> _onItemAdd;
-        private Func<I, bool>        _onItemDelete;
-        private Func<I, bool>        _onItemFilter;
-        private Action<I>            _onItemDetails;
-        private Action<I, int>       _onItemIndexChanged;
+        private Action<List<I>>                     _onCreate;
+        private Action                              _onFilters;
+        private Func<I, string>                     _onItemTitle;
+        private Action<PropertyListItemRenderer<I>> _onItemRender;
+        private Func<I>                             _onItemAdd;
+        private Func<bool>                          _onItemAddAvailable;
+        private Func<bool>                          _onItemAddValidation;
+        private Func<I, bool>                       _onItemDelete;
+        private Func<I, bool>                       _onItemFilter;
+        private Action<I>                           _onItemDetails;
+        private Action<I, int>                      _onItemIndexChanged;
+
+        private int    _pageSize;
+        private object _pageStorageKey;
+        private int    _page;
+        private int    _pagesTotal;
+
+        private static readonly Dictionary<object, int> _pageStorage = new();
 
         internal PropertyList(string label, List<I> items)
         {
@@ -52,17 +64,77 @@ namespace Build1.UnityEGUI.PropertyList
          * Public
          */
 
+        public PropertyList<I> Title(string title)
+        {
+            _title = title;
+            return this;
+        }
+
+        public PropertyList<I> Title(FontStyle fontStyle)
+        {
+            _titleStyle = fontStyle;
+            return this;
+        }
+
+        public PropertyList<I> Title(bool showCount)
+        {
+            _titleShowCount = showCount;
+            return this;
+        }
+
+        public PropertyList<I> Title(string title, FontStyle fontStyle)
+        {
+            _title = title;
+            _titleStyle = fontStyle;
+            return this;
+        }
+
+        public PropertyList<I> Title(string title, bool showCount)
+        {
+            _title = title;
+            _titleShowCount = showCount;
+            return this;
+        }
+
+        public PropertyList<I> Title(FontStyle fontStyle, bool showCount)
+        {
+            _titleStyle = fontStyle;
+            _titleShowCount = showCount;
+            return this;
+        }
+
+        public PropertyList<I> Title(string title, FontStyle fontStyle, bool showCount)
+        {
+            _title = title;
+            _titleStyle = fontStyle;
+            _titleShowCount = showCount;
+            return this;
+        }
+
+        public PropertyList<I> NoHeader()
+        {
+            _titleShow = false;
+            return this;
+        }
+
         public PropertyList<I> ItemRenderer<R>() where R : PropertyListItemRenderer<I>
         {
             _itemRendererType = typeof(R);
             return this;
         }
 
-        public PropertyList<I> WindowRenderer<W>() where W : PropertyListItemWindow<I>
+        public PropertyList<I> WindowRenderer<W>() where W : PropertyWindow<I>
         {
             _windowRendererType = typeof(W);
             return this;
         }
+
+        public PropertyList<I> OnFilters(Action handler)
+        {
+            _onFilters = handler;
+            return this;
+        }
+
 
         public PropertyList<I> OnItemTitle(Func<I, string> handler)
         {
@@ -70,16 +142,27 @@ namespace Build1.UnityEGUI.PropertyList
             return this;
         }
 
-        public PropertyList<I> OnItemAdd(Func<Tuple<bool, I>> handler)
+        public PropertyList<I> OnItemRender(Action<PropertyListItemRenderer<I>> handler)
+        {
+            _onItemRender = handler;
+            return this;
+        }
+
+        public PropertyList<I> OnItemAdd(Func<I> handler)
         {
             _onItemAdd = handler;
             return this;
         }
-        
-        public PropertyList<I> OnItemAdd(PropertyListAddBehavior behavior, Func<Tuple<bool, I>> handler)
+
+        public PropertyList<I> OnItemAddAvailable(Func<bool> handler)
         {
-            _onItemAdd = handler;
-            _addBehavior = behavior;
+            _onItemAddAvailable = handler;
+            return this;
+        }
+
+        public PropertyList<I> OnItemAddValidation(Func<bool> handler)
+        {
+            _onItemAddValidation = handler;
             return this;
         }
 
@@ -100,27 +183,39 @@ namespace Build1.UnityEGUI.PropertyList
             _onItemDetails = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemIndexChanged(Action<I, int> handler)
         {
             _onItemIndexChanged = handler;
             return this;
         }
 
+        public PropertyList<I> Pager(int pageSize, object pageStorageKey)
+        {
+            _pageSize = pageSize;
+            _pageStorageKey = pageStorageKey;
+            _pageStorage.TryGetValue(_pageStorageKey, out _page);
+            return this;
+        }
+
         public void Build()
         {
-            EGUI.Horizontally(() =>
+            if (_titleShow)
             {
-                if (!string.IsNullOrWhiteSpace(Label))
-                    EGUI.Label(Label);
+                EGUI.Horizontally(() =>
+                {
+                    EGUI.Label(_title ?? Label, _titleStyle);
+                    EGUI.Space();
 
-                EGUI.Space();
-                EGUI.Label("Count:");
+                    if (_titleShowCount)
+                    {
+                        EGUI.Label("Count:");
+                        EGUI.Enabled(false, () => { EGUI.Int(Items?.Count ?? 0, 50, c => { }); });
+                    }
+                });
 
-                EGUI.Enabled(_onItemAdd != null, () => { EGUI.Int(Items?.Count ?? 0, 50, CountChanged); });
-            });
-
-            EGUI.Space(3);
+                EGUI.Space(3);
+            }
 
             var style = new GUIStyle(EditorStyles.helpBox)
             {
@@ -130,56 +225,140 @@ namespace Build1.UnityEGUI.PropertyList
             switch (LayoutType)
             {
                 case LayoutType.Horizontal:
-                    EGUI.Horizontally(style, BuildImpl);
+                    EGUI.Horizontally(style, () =>
+                    {
+                        RenderFilters();
+                        RenderList();
+                    });
                     break;
                 case LayoutType.Vertical:
-                    EGUI.Vertically(style, BuildImpl);
+                    EGUI.Vertically(style, () =>
+                    {
+                        RenderFilters();
+                        RenderList();
+                    });
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
-            if (typeof(I).IsEnum || _addBehavior == PropertyListAddBehavior.Disabled)
-                return;
 
-            EGUI.Space(3);
-            EGUI.Horizontally(() =>
+            var pagerSet = _pageSize > 0;
+            var itemAdditionAvailable = _onItemAddAvailable == null || _onItemAddAvailable.Invoke();
+
+            if (pagerSet || itemAdditionAvailable)
             {
-                EGUI.Space();
-                EGUI.Button("+", 30, 22, new RectOffset(0, 0, 0, 2), Add);
-            });
+                EGUI.Space(3);
+                EGUI.Horizontally(() =>
+                {
+                    EGUI.Space(30);
+
+                    if (pagerSet)
+                    {
+                        EGUI.Space();
+
+                        EGUI.Button("←", 30, 22, new RectOffset(0, 0, 0, 2), Prev);
+                        EGUI.Label($"{_page + 1}/{_pagesTotal}", 45, 22, FontStyle.Normal, TextAnchor.MiddleCenter);
+                        EGUI.Button("→", 30, 22, new RectOffset(0, 0, 0, 2), Next);
+                    }
+
+                    EGUI.Space();
+
+                    if (itemAdditionAvailable)
+                        EGUI.Button("+", 30, 22, new RectOffset(0, 0, 0, 2), Add);
+                    else
+                        EGUI.Space(30);
+                });
+                EGUI.Space(3);
+            }
+            else
+            {
+                EGUI.Space(28);
+            }
         }
 
         /*
          * Private.
          */
 
-        private void BuildImpl()
+        private void RenderFilters()
         {
-            if (Items == null || Items.Count == 0)
+            if (_onFilters == null)
+                return;
+
+            EGUI.Label("Filters", FontStyle.Bold);
+            EGUI.Space(1);
+
+            _onFilters?.Invoke();
+
+            EGUI.Space(6);
+        }
+
+        private void RenderList()
+        {
+            var items = Items;
+            if (items != null)
             {
-                EGUI.Space(10);
-                EGUI.Label("Empty", true, TextAnchor.MiddleCenter);
-                EGUI.Space(10);
+                var itemsFiltered = new List<I>();
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    if (_onItemFilter?.Invoke(items[i]) == false)
+                        continue;
+
+                    itemsFiltered.Add(items[i]);
+                }
+
+                items = itemsFiltered;
+
+                if (_pageSize > 0)
+                {
+                    _pagesTotal = Mathf.CeilToInt(items.Count / (float)_pageSize);
+
+                    if (_page >= _pagesTotal)
+                    {
+                        _page = 0;
+                        _pageStorage[_pageStorageKey] = _page;
+                    }
+
+                    var index = _page * _pageSize;
+                    var count = Math.Min(_pageSize, items.Count - index);
+                    items = items.GetRange(index, count);
+                }
+            }
+
+            if (items == null || items.Count == 0)
+            {
+                EGUI.Space(25);
+                EGUI.Label("No Items", true, TextAnchor.MiddleCenter);
+                EGUI.Space(25);
                 return;
             }
 
-            for (var i = 0; i < Items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
-                if (_onItemFilter?.Invoke(Items[i]) == false)
-                    continue;
-
                 PropertyListItemRenderer<I> itemRenderer;
+                
+                var item = items[i];
 
                 if (_itemRendererType != null)
+                {
                     itemRenderer = (PropertyListItemRenderer<I>)Activator.CreateInstance(_itemRendererType);
+                }
+                else if (_onItemRender != null)
+                {
+                    itemRenderer = new RenderingItemRenderer<I>(_onItemRender);
+                }
                 else
-                    itemRenderer = new DefaultItemRenderer<I>();
-
-                var item = Items[i];
-                var title = _onItemTitle?.Invoke(item);
-
-                itemRenderer.Init(title, i, item, Items);
+                {
+                    var itemRendererDefault = new DefaultItemRenderer<I>
+                    {
+                        Title = _onItemTitle?.Invoke(item)
+                    };
+                    
+                    itemRenderer = itemRendererDefault;
+                }
+                
+                itemRenderer.Init(item, i, items);
                 itemRenderer.OnEGUI();
 
                 ProcessAction(itemRenderer.Action, itemRenderer.Item);
@@ -208,6 +387,7 @@ namespace Build1.UnityEGUI.PropertyList
                         Items.Insert(index, item);
                         _onItemIndexChanged?.Invoke(item, index);
                     }
+
                     break;
 
                 case PropertyListItemAction.Delete:
@@ -219,16 +399,9 @@ namespace Build1.UnityEGUI.PropertyList
 
                     if (_windowRendererType != null)
                     {
-                        var title = _onItemTitle?.Invoke(item);
                         index = Items.IndexOf(item);
 
-                        var window = (PropertyListItemWindow<I>)Activator.CreateInstance(_windowRendererType);
-                        window.Init(title, index, item, Items);
-
-                        var size = window.Size;
-                        var windowInstance = EGUIWindow.Create<ItemWindowRenderer>(title, size.x, size.y, false);
-                        windowInstance.Initialize(title, window.OnEGUI, window.OnFocusLost);
-                        windowInstance.Show();
+                        EGUI.PropertyWindow(_windowRendererType, item, index, Items);
                     }
                     else
                     {
@@ -242,52 +415,29 @@ namespace Build1.UnityEGUI.PropertyList
             }
         }
 
-        private void CountChanged(int count)
+        private void Add()
         {
-            count = Mathf.Min(count, CountMax);
-            if (count == (Items?.Count ?? 0))
+            var addValid = _onItemAddValidation == null || _onItemAddValidation.Invoke();
+            if (!addValid)
                 return;
 
             TryCreate();
 
-            if (count < Items.Count)
-            {
-                Items.RemoveRange(count, Items.Count - count);
-            }
-            else if (count > Items.Count && _onItemAdd != null)
-            {
-                if (count > Items.Capacity)
-                    Items.Capacity = count;
-
-                var countToAdd = count - Items.Count;
-                for (var i = 0; i < countToAdd; i++)
-                {
-                    var itemInfo = _onItemAdd.Invoke();
-                    if (itemInfo.Item1)
-                        Items.Add(itemInfo.Item2);
-                }
-            }
-        }
-
-        private void Add()
-        {
-            TryCreate();
-
             I item = default;
-            
-            if (_onItemAdd != null)
-            {
-                var itemInfo = _onItemAdd.Invoke();
-                if (!itemInfo.Item1)
-                    return;
 
-                item = itemInfo.Item2;
-            }
-            
+            if (_onItemAdd != null)
+                item = _onItemAdd.Invoke();
+
             Items.Add(item);
 
-            if (_addBehavior == PropertyListAddBehavior.OpenDetails)
+            if (_windowRendererType != null)
                 ProcessAction(PropertyListItemAction.Details, item);
+
+            if (_pageSize > 0)
+            {
+                _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
+                _pageStorage[_pageStorageKey] = _page;
+            }
         }
 
         private void TryCreate()
@@ -297,6 +447,24 @@ namespace Build1.UnityEGUI.PropertyList
 
             Items = new List<I>();
             _onCreate?.Invoke(Items);
+        }
+
+        private void Prev()
+        {
+            if (_page <= 0)
+                return;
+
+            _page--;
+            _pageStorage[_pageStorageKey] = _page;
+        }
+
+        private void Next()
+        {
+            if (_page >= _pagesTotal - 1)
+                return;
+
+            _page++;
+            _pageStorage[_pageStorageKey] = _page;
         }
     }
 }

@@ -102,6 +102,13 @@ namespace Build1.UnityEGUI
             GUILayout.Label(text, style);
         }
 
+        public static void Label(string text, bool stretchedWidth)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.stretchWidth = stretchedWidth;
+            GUILayout.Label(text, style);
+        }
+        
         public static void Label(string text, bool stretchedWidth, TextAnchor alignment)
         {
             var style = LabelBuildStyle(LabelType.Default);
@@ -119,9 +126,30 @@ namespace Build1.UnityEGUI
             GUILayout.Label(text, style);
         }
 
+        public static void Label(string text, float height)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            GUILayout.Label(text, style, GUILayout.Height(height));
+        }
+        
         public static void Label(string text, float height, FontStyle fontStyle)
         {
             var style = LabelBuildStyle(LabelType.Default);
+            style.fontStyle = fontStyle;
+            GUILayout.Label(text, style, GUILayout.Height(height));
+        }
+        
+        public static void Label(string text, float height, bool stretchedWidth)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.stretchWidth = stretchedWidth;
+            GUILayout.Label(text, style, GUILayout.Height(height));
+        }
+        
+        public static void Label(string text, float height, FontStyle fontStyle, bool stretchedWidth)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.stretchWidth = stretchedWidth;
             style.fontStyle = fontStyle;
             GUILayout.Label(text, style, GUILayout.Height(height));
         }
@@ -134,6 +162,35 @@ namespace Build1.UnityEGUI
             GUILayout.Label(text, style, GUILayout.Height(height));
         }
 
+        public static void Label(string text, int width, float height, FontStyle fontStyle)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.fontStyle = fontStyle;
+            GUILayout.Label(text, style, GUILayout.Width(width), GUILayout.Height(height));
+        }
+        
+        public static void Label(string text, int width, TextAnchor alignment)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.alignment = alignment;
+            GUILayout.Label(text, style, GUILayout.Width(width));
+        }
+        
+        public static void Label(string text, int width, float height, TextAnchor alignment)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.alignment = alignment;
+            GUILayout.Label(text, style, GUILayout.Width(width), GUILayout.Height(height));
+        }
+        
+        public static void Label(string text, int width, float height, FontStyle fontStyle, TextAnchor alignment)
+        {
+            var style = LabelBuildStyle(LabelType.Default);
+            style.fontStyle = fontStyle;
+            style.alignment = alignment;
+            GUILayout.Label(text, style, GUILayout.Width(width), GUILayout.Height(height));
+        }
+        
         public static void Label(string text, int width, float height, bool stretchedWidth, TextAnchor alignment)
         {
             var style = LabelBuildStyle(LabelType.Default);
