@@ -11,9 +11,9 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
             EGUI.Horizontally(() =>
             {
                 EGUI.TextField(Item, (int)EGUI.ButtonHeight02, TextAnchor.MiddleLeft, SetItem);
-                RenderUpButton();
-                RenderDownButton();
-                RenderDeleteButton();
+                RenderUpButton(EGUI.ButtonHeight02);
+                RenderDownButton(EGUI.ButtonHeight02);
+                RenderDeleteButton(EGUI.ButtonHeight02);
             });
         }
     }

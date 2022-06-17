@@ -358,7 +358,7 @@ namespace Build1.UnityEGUI.PropertyList
                     itemRenderer = itemRendererDefault;
                 }
                 
-                itemRenderer.Init(item, i, items);
+                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items);
                 itemRenderer.OnEGUI();
 
                 ProcessAction(itemRenderer.Action, itemRenderer.Item);

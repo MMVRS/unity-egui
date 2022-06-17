@@ -9,39 +9,46 @@ namespace Build1.UnityEGUI.PropertyList
     {
         public I                      Item   { get; private set; }
         public PropertyListItemAction Action { get; private set; } = PropertyListItemAction.None;
-        
-        protected int              Index { get; private set; }
-        protected IReadOnlyList<I> Items => _items;
+
+        protected int Index           { get; private set; }
+        protected int IndexUnfiltered { get; private set; }
+
+        protected IReadOnlyList<I> Items           => _items;
+        protected IReadOnlyList<I> ItemsUnfiltered => _itemsUnfiltered;
 
         private List<I> _items;
+        private List<I> _itemsUnfiltered;
 
         /*
          * Internal.
          */
 
-        internal void Init(I item, int index, List<I> items)
+        internal void Init(I item, int index, int indexUnfiltered, List<I> items, List<I> itemsUnfiltered)
         {
             Item = item;
+            
             Index = index;
+            IndexUnfiltered = indexUnfiltered;
 
             _items = items;
+            _itemsUnfiltered = itemsUnfiltered;
         }
-        
+
         public abstract void OnEGUI();
 
         /*
          * Protected.
          */
-        
+
         protected void SetItem(I item)
         {
-            _items[Index] = item;
+            _itemsUnfiltered[IndexUnfiltered] = item;
         }
-        
+
         /*
          * Private.
          */
-        
+
         private void SetAction(PropertyListItemAction action)
         {
             Action = action;
