@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 
-namespace Build1.UnityEGUI.Types
+namespace Build1.UnityEGUI.Components.Title
 {
     public enum TitleType
     {

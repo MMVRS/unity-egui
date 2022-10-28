@@ -14,9 +14,10 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
             {
                 EGUI.Horizontally(() =>
                 {
-                    var height = EGUI.ButtonHeight05;
+                    var height = EGUI.ButtonHeight04;
                     var title = Title ?? Item.ToString();
-                    EGUI.Label(title, height, FontStyle.Normal);
+                    
+                    EGUI.Label(title, EGUI.Height(height), EGUI.FontStyle(FontStyle.Normal));
 
                     RenderDetailsButton(height);
                     RenderUpButton(height);

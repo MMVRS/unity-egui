@@ -204,7 +204,7 @@ namespace Build1.UnityEGUI.PropertyList
             {
                 EGUI.Horizontally(() =>
                 {
-                    EGUI.Label(_title ?? Label, _titleStyle);
+                    EGUI.Label(_title ?? Label, EGUI.FontStyle(_titleStyle));
                     EGUI.Space();
 
                     if (_titleShowCount)
@@ -257,7 +257,7 @@ namespace Build1.UnityEGUI.PropertyList
                         EGUI.Space();
 
                         EGUI.Button("←", 30, 22, new RectOffset(0, 0, 0, 2), Prev);
-                        EGUI.Label($"{_page + 1}/{_pagesTotal}", 45, 22, FontStyle.Normal, TextAnchor.MiddleCenter);
+                        EGUI.Label($"{_page + 1}/{_pagesTotal}", EGUI.Width(45), EGUI.Height(22), EGUI.FontStyle(FontStyle.Normal), EGUI.TextAnchor(TextAnchor.MiddleCenter));
                         EGUI.Button("→", 30, 22, new RectOffset(0, 0, 0, 2), Next);
                     }
 
@@ -285,7 +285,7 @@ namespace Build1.UnityEGUI.PropertyList
             if (_onFilters == null)
                 return;
 
-            EGUI.Label("Filters", FontStyle.Bold);
+            EGUI.Label("Filters", EGUI.FontStyle(FontStyle.Bold));
             EGUI.Space(1);
 
             _onFilters?.Invoke();
@@ -329,7 +329,7 @@ namespace Build1.UnityEGUI.PropertyList
             if (items == null || items.Count == 0)
             {
                 EGUI.Space(25);
-                EGUI.Label("No Items", true, TextAnchor.MiddleCenter);
+                EGUI.Label("No Items", EGUI.StretchedWidth(), EGUI.TextAnchor(TextAnchor.MiddleCenter));
                 EGUI.Space(25);
                 return;
             }

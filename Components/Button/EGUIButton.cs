@@ -7,21 +7,21 @@ namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
-        public static float ButtonHeight01 { get; set; } = 30;
-        public static float ButtonHeight02 { get; set; } = 25;
-        public static float ButtonHeight03 { get; set; } = 22;
-        public static float ButtonHeight04 { get; set; } = 20;
-        public static float ButtonHeight05 { get; set; } = 18;
+        public static float ButtonHeightDefault { get; set; } = 19;
+        public static int   ButtonHeight01      { get; set; } = 30;
+        public static float ButtonHeight02      { get; set; } = 25;
+        public static float ButtonHeight03      { get; set; } = 22;
+        public static int   ButtonHeight04      { get; set; } = 19;
 
         /*
          * Return.
          */
 
-        public static bool Button(string label)                          { return GUILayout.Button(label); }
+        public static bool Button(string label)                          { return GUILayout.Button(label, GUILayout.Height(ButtonHeightDefault)); }
         public static bool Button(string label, int width)               { return GUILayout.Button(label, GUILayout.Width(width)); }
         public static bool Button(string label, float height)            { return GUILayout.Button(label, GUILayout.Height(height)); }
         public static bool Button(string label, int width, float height) { return GUILayout.Button(label, GUILayout.Width(width), GUILayout.Height(height)); }
-        
+
         public static bool Button(string label, int width, float height, RectOffset padding)
         {
             var style = GUI.skin.button;

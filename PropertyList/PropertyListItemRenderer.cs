@@ -60,7 +60,7 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void RenderDetailsButton()
         {
-            RenderDetailsButton(EGUI.ButtonHeight05);
+            RenderDetailsButton(EGUI.ButtonHeight04);
         }
 
         public void RenderDetailsButton(float height)
@@ -74,7 +74,7 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void RenderUpButton()
         {
-            RenderUpButton(EGUI.ButtonHeight05);
+            RenderUpButton(EGUI.ButtonHeight04);
         }
 
         public void RenderUpButton(float height)
@@ -88,7 +88,7 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void RenderDownButton()
         {
-            RenderDownButton(EGUI.ButtonHeight05);
+            RenderDownButton(EGUI.ButtonHeight04);
         }
 
         public void RenderDownButton(float height)
@@ -102,7 +102,7 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void RenderDeleteButton()
         {
-            RenderDeleteButton(EGUI.ButtonHeight05);
+            RenderDeleteButton(EGUI.ButtonHeight04);
         }
 
         public void RenderDeleteButton(float height)
