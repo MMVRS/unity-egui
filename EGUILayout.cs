@@ -106,7 +106,7 @@ namespace Build1.UnityEGUI
             onPanel?.Invoke();
             EditorGUILayout.EndVertical();
         }
-
+        
         /*
          * Scroll.
          */

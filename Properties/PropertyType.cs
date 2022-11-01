@@ -4,13 +4,17 @@ namespace Build1.UnityEGUI.Properties
 {
     public enum PropertyType
     {
+        Enabled = 1,
+
         Width  = 10,
         Height = 11,
-
-        StretchedWidth  = 12,
-        StretchedHeight = 13,
+        Size = 12,
 
         OffsetX = 20,
+        Padding = 30,
+        
+        StretchedWidth  = 40,
+        StretchedHeight = 41,
 
         FontStyle  = 100,
         TextAnchor = 101

@@ -10,14 +10,14 @@ namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
-        public static float LabelHeightDefault { get; set; } = 19;
+        public static float LabelHeightMin { get; set; } = 19;
         public static float LabelHeight01      { get; set; } = 30;
         public static float LabelHeight02      { get; set; } = 25;
         public static float LabelHeight03      { get; set; } = 22;
         public static float LabelHeight04      { get; set; } = 19;
 
         public static Color LabelColorError { get; set; } = Color.red;
-
+        
         public static void Label(string text, params Property[] properties)
         {
             Label(text, LabelType.Default, properties);
@@ -41,8 +41,7 @@ namespace Build1.UnityEGUI
             };
 
             List<GUILayoutOption> options = null;
-            var defaultHeightAdded = false;
-
+            
             foreach (var property in properties)
             {
                 switch (property.type)
@@ -54,7 +53,11 @@ namespace Build1.UnityEGUI
                     case PropertyType.Height:
                         options ??= new List<GUILayoutOption>();
                         options.Add(GUILayout.Height(property.valueInt));
-                        defaultHeightAdded = true;
+                        break;
+                    case PropertyType.Size:
+                        options ??= new List<GUILayoutOption>();
+                        options.Add(GUILayout.Width(property.valueVector2Int.x));
+                        options.Add(GUILayout.Height(property.valueVector2Int.y));
                         break;
                     case PropertyType.FontStyle:
                         style.fontStyle = property.valueFontStyle;
@@ -69,22 +72,11 @@ namespace Build1.UnityEGUI
                         throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
                 }
             }
-
-            GUILayoutOption[] optionsArray;
-
-            if (options == null)
-            {
-                optionsArray = new[] { GUILayout.Height(LabelHeightDefault) };
-            }
-            else
-            {
-                if (!defaultHeightAdded)
-                    options.Add(GUILayout.Height(LabelHeightDefault));
-
-                optionsArray = options.ToArray();
-            }
-
-            GUILayout.Label(text, style, optionsArray);
+            
+            options ??= new List<GUILayoutOption>();
+            options.Add(GUILayout.MinHeight(LabelHeightMin));
+            
+            GUILayout.Label(text, style, options.ToArray());
         }
     }
 }

@@ -63,9 +63,10 @@ namespace Build1.UnityEGUI.PropertyList
             RenderDetailsButton(EGUI.ButtonHeight04);
         }
 
-        public void RenderDetailsButton(float height)
+        public void RenderDetailsButton(int height)
         {
-            EGUI.Button("...", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Details);
+            EGUI.Button("...", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0)))
+                .OnClick(SetAction, PropertyListItemAction.Details);
         }
 
         /*
@@ -77,9 +78,9 @@ namespace Build1.UnityEGUI.PropertyList
             RenderUpButton(EGUI.ButtonHeight04);
         }
 
-        public void RenderUpButton(float height)
+        public void RenderUpButton(int height)
         {
-            EGUI.Button("↑", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Up);
+            EGUI.Button("↑", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Up);
         }
 
         /*
@@ -91,9 +92,9 @@ namespace Build1.UnityEGUI.PropertyList
             RenderDownButton(EGUI.ButtonHeight04);
         }
 
-        public void RenderDownButton(float height)
+        public void RenderDownButton(int height)
         {
-            EGUI.Button("↓", 30, height, new RectOffset(2, 0, 0, 0), SetAction, PropertyListItemAction.Down);
+            EGUI.Button("↓", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Down);
         }
 
         /*
@@ -105,9 +106,9 @@ namespace Build1.UnityEGUI.PropertyList
             RenderDeleteButton(EGUI.ButtonHeight04);
         }
 
-        public void RenderDeleteButton(float height)
+        public void RenderDeleteButton(int height)
         {
-            EGUI.Button("×", 30, height, new RectOffset(1, 1, 0, 2), SetAction, PropertyListItemAction.Delete);
+            EGUI.Button("×", EGUI.Size(30, height), EGUI.Padding(new RectOffset(1, 1, 0, 2))).OnClick(SetAction, PropertyListItemAction.Delete);
         }
     }
 }

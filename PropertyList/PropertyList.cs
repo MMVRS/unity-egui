@@ -256,15 +256,15 @@ namespace Build1.UnityEGUI.PropertyList
                     {
                         EGUI.Space();
 
-                        EGUI.Button("←", 30, 22, new RectOffset(0, 0, 0, 2), Prev);
-                        EGUI.Label($"{_page + 1}/{_pagesTotal}", EGUI.Width(45), EGUI.Height(22), EGUI.FontStyle(FontStyle.Normal), EGUI.TextAnchor(TextAnchor.MiddleCenter));
-                        EGUI.Button("→", 30, 22, new RectOffset(0, 0, 0, 2), Next);
+                        EGUI.Button("←", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Prev);
+                        EGUI.Label($"{_page + 1}/{_pagesTotal}", EGUI.Size(45,22), EGUI.FontStyle(FontStyle.Normal), EGUI.TextAnchor(TextAnchor.MiddleCenter));
+                        EGUI.Button("→", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Next);
                     }
 
                     EGUI.Space();
 
                     if (itemAdditionAvailable)
-                        EGUI.Button("+", 30, 22, new RectOffset(0, 0, 0, 2), Add);
+                        EGUI.Button("+", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Add);
                     else
                         EGUI.Space(30);
                 });

@@ -112,10 +112,10 @@ namespace Build1.UnityEGUI
 
                 if (isFlags)
                 {
-                    if (Button("All", 45))
+                    if (Button("All", Width(45)).Clicked())
                         valueNew = (Enum)System.Enum.ToObject(value.GetType(), values.Cast<int>().Sum());
 
-                    if (Button("None", 45))
+                    if (Button("None", Width(45)).Clicked())
                         valueNew = (Enum)System.Enum.ToObject(value.GetType(), 0);    
                 }
             });

@@ -61,7 +61,7 @@ namespace Build1.UnityEGUI
             };
 
             var alignmentSet = false;
-
+            
             foreach (var property in properties)
             {
                 switch (property.type)
@@ -71,6 +71,10 @@ namespace Build1.UnityEGUI
                         alignmentSet = true;
                         break;
 
+                    case PropertyType.StretchedWidth:
+                        style.stretchWidth = property.valueBool;
+                        break;
+                    
                     case PropertyType.StretchedHeight:
                         style.stretchHeight = property.valueBool;
                         break;
@@ -80,7 +84,7 @@ namespace Build1.UnityEGUI
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
                 }
             }
 
