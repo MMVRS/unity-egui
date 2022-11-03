@@ -122,6 +122,11 @@ namespace Build1.UnityEGUI
          * Separators.
          */
 
+        public static void Line(int thickness = 2, int padding = 0)
+        {
+            Line(Color.gray, thickness, padding);
+        }
+        
         public static void Line(Color color, int thickness = 2, int padding = 0)
         {
             var rect = EditorGUILayout.GetControlRect(GUILayout.Height(padding + thickness));
