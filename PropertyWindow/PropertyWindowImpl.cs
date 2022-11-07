@@ -22,7 +22,10 @@ namespace Build1.UnityEGUI.PropertyWindow
 
         protected override void OnFocusLost()
         {
-            _window.OnFocusLost();
+            if (_window == null)
+                Close();
+            else
+                _window.OnFocusLost();
         }
 
         public new PropertyWindowImpl Show()
