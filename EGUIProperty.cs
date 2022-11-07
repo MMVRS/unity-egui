@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Build1.UnityEGUI.RenderModes;
@@ -184,7 +185,21 @@ namespace Build1.UnityEGUI
                 }
             });
         }
+        
+        /*
+         * Properties DateTime.
+         */
 
+        public static void Property(object instance, DateTime value, string propertyName)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, value =>
+            {
+                var stringCurrent = value.ToString(CultureInfo.InvariantCulture);
+                var stringNew = GUILayout.TextField(stringCurrent);
+                return DateTime.Parse(stringNew);
+            });
+        }
+        
         /*
          * Properties Base.
          */
