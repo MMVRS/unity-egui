@@ -135,7 +135,6 @@ namespace Build1.UnityEGUI.PropertyList
             return this;
         }
 
-
         public PropertyList<I> OnItemTitle(Func<I, string> handler)
         {
             _onItemTitle = handler;
@@ -157,6 +156,12 @@ namespace Build1.UnityEGUI.PropertyList
         public PropertyList<I> OnItemAddAvailable(Func<bool> handler)
         {
             _onItemAddAvailable = handler;
+            return this;
+        }
+        
+        public PropertyList<I> DisableAdding()
+        {
+            _onItemAddAvailable = () => false;
             return this;
         }
 
@@ -244,7 +249,6 @@ namespace Build1.UnityEGUI.PropertyList
 
             var pagerSet = _pageSize > 0;
             var itemAdditionAvailable = _onItemAddAvailable == null || _onItemAddAvailable.Invoke();
-
             if (pagerSet || itemAdditionAvailable)
             {
                 EGUI.Space(3);
@@ -265,14 +269,8 @@ namespace Build1.UnityEGUI.PropertyList
 
                     if (itemAdditionAvailable)
                         EGUI.Button("+", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Add);
-                    else
-                        EGUI.Space(30);
                 });
                 EGUI.Space(3);
-            }
-            else
-            {
-                EGUI.Space(28);
             }
         }
 
