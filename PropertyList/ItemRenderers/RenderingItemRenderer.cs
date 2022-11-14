@@ -9,7 +9,7 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
         public static RenderingItemRenderer<I> Render<I>(I item, Action<PropertyListItemRenderer<I>> renderingFunction)
         {
             var renderer = new RenderingItemRenderer<I>(renderingFunction);
-            renderer.Init(item, 0, 0, null, null);
+            renderer.Init(item, 0, 0, null, null, ButtonType.All);
             renderer.OnEGUI();
             return renderer;
         }

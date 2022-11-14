@@ -4,7 +4,7 @@ using System;
 
 namespace Build1.UnityEGUI.Components.Button
 {
-    public struct ButtonResult
+    public readonly struct ButtonResult
     {
         private readonly bool clicked;
         
@@ -33,6 +33,12 @@ namespace Build1.UnityEGUI.Components.Button
         {
             if (clicked)
                 action(param);
+        }
+        
+        public void OnClick<T1, T2>(Action<T1, T2> action, T1 param01, T2 param02)
+        {
+            if (clicked)
+                action(param01, param02);
         }
     }
 }

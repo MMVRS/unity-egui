@@ -10,10 +10,11 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
         {
             EGUI.Horizontally(() =>
             {
-                EGUI.Enum(Item, (int)EGUI.ButtonHeight02, value => { SetItem((T)value); });
-                RenderUpButton();
-                RenderDownButton();
-                RenderDeleteButton();
+                EGUI.Enum(Item, EGUI.ButtonHeight02, value => { SetItem((T)value); });
+                
+                TryRenderButton(ButtonType.Up);
+                TryRenderButton(ButtonType.Down);
+                TryRenderButton(ButtonType.Delete);
             });
         }
     }

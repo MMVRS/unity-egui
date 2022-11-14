@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,23 +8,25 @@ namespace Build1.UnityEGUI.PropertyList
 {
     public abstract class PropertyListItemRenderer<I>
     {
-        public I                      Item   { get; private set; }
-        public PropertyListItemAction Action { get; private set; } = PropertyListItemAction.None;
-
-        protected int Index           { get; private set; }
-        protected int IndexUnfiltered { get; private set; }
+        public    I                      Item            { get; private set; }
+        public    PropertyListItemAction Action          { get; private set; } = PropertyListItemAction.None;
+        public    ButtonType             Buttons         => _buttons;
+        
+        protected int                    Index           { get; private set; }
+        protected int                    IndexUnfiltered { get; private set; }
 
         protected IReadOnlyList<I> Items           => _items;
         protected IReadOnlyList<I> ItemsUnfiltered => _itemsUnfiltered;
 
-        private List<I> _items;
-        private List<I> _itemsUnfiltered;
+        private List<I>    _items;
+        private List<I>    _itemsUnfiltered;
+        private ButtonType _buttons;
 
         /*
          * Internal.
          */
 
-        internal void Init(I item, int index, int indexUnfiltered, List<I> items, List<I> itemsUnfiltered)
+        internal void Init(I item, int index, int indexUnfiltered, List<I> items, List<I> itemsUnfiltered, ButtonType buttons)
         {
             Item = item;
             
@@ -32,6 +35,7 @@ namespace Build1.UnityEGUI.PropertyList
 
             _items = items;
             _itemsUnfiltered = itemsUnfiltered;
+            _buttons = buttons;
         }
 
         public abstract void OnEGUI();
@@ -55,60 +59,45 @@ namespace Build1.UnityEGUI.PropertyList
         }
 
         /*
-         * View Button.
+         * Buttons.
          */
 
-        public void RenderDetailsButton()
+        protected void TryRenderButton(ButtonType button)
         {
-            RenderDetailsButton(EGUI.ButtonHeight04);
+            if ((_buttons & button) == button)
+                RenderButton(button);
+        }
+        
+        protected void TryRenderButton(ButtonType button, int height)
+        {
+            if ((_buttons & button) == button)
+                RenderButton(button, height);
         }
 
-        public void RenderDetailsButton(int height)
+        protected void RenderButton(ButtonType button)
         {
-            EGUI.Button("...", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0)))
-                .OnClick(SetAction, PropertyListItemAction.Details);
+            RenderButton(button, EGUI.ButtonHeight04);
         }
-
-        /*
-         * Up Button.
-         */
-
-        public void RenderUpButton()
+        
+        protected void RenderButton(ButtonType button, int height)
         {
-            RenderUpButton(EGUI.ButtonHeight04);
-        }
-
-        public void RenderUpButton(int height)
-        {
-            EGUI.Button("↑", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Up);
-        }
-
-        /*
-         * Down Button.
-         */
-
-        public void RenderDownButton()
-        {
-            RenderDownButton(EGUI.ButtonHeight04);
-        }
-
-        public void RenderDownButton(int height)
-        {
-            EGUI.Button("↓", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Down);
-        }
-
-        /*
-         * Delete Button.
-         */
-
-        public void RenderDeleteButton()
-        {
-            RenderDeleteButton(EGUI.ButtonHeight04);
-        }
-
-        public void RenderDeleteButton(int height)
-        {
-            EGUI.Button("×", EGUI.Size(30, height), EGUI.Padding(new RectOffset(1, 1, 0, 2))).OnClick(SetAction, PropertyListItemAction.Delete);
+            switch (button)
+            {
+                case ButtonType.Up:
+                    EGUI.Button("↑", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Up);
+                    break;
+                case ButtonType.Down:
+                    EGUI.Button("↓", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Down);
+                    break;
+                case ButtonType.Delete:
+                    EGUI.Button("×", EGUI.Size(30, height), EGUI.Padding(new RectOffset(1, 1, 0, 2))).OnClick(SetAction, PropertyListItemAction.Delete);
+                    break;
+                case ButtonType.Details:
+                    EGUI.Button("...", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Details);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(button), button, null);
+            }
         }
     }
 }

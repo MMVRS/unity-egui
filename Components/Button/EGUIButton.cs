@@ -20,6 +20,11 @@ namespace Build1.UnityEGUI
          * Return.
          */
 
+        public static ButtonResult Button(string label)
+        {
+            return Button(label, null);
+        }
+        
         public static ButtonResult Button(string label, params Property[] properties)
         {
             var style = GUI.skin.button;
@@ -27,40 +32,43 @@ namespace Build1.UnityEGUI
             List<GUILayoutOption> options = null;
             
             var defaultHeightAdded = false;
-            var enabledPresent = false;
+            var enabledPreset = false;
             var enabledValue = false;
 
-            foreach (var property in properties)
+            if (properties != null)
             {
-                switch (property.type)
+                foreach (var property in properties)
                 {
-                    case PropertyType.Enabled:
-                        enabledPresent = true;
-                        enabledValue = property.valueBool;
-                        break;
-                    case PropertyType.Width:
-                        options ??= new List<GUILayoutOption>();
-                        options.Add(GUILayout.Width(property.valueInt));
-                        break;
-                    case PropertyType.Height:
-                        options ??= new List<GUILayoutOption>();
-                        options.Add(GUILayout.Height(property.valueInt));
-                        defaultHeightAdded = true;
-                        break;
-                    case PropertyType.Size:
-                        options ??= new List<GUILayoutOption>();
-                        options.Add(GUILayout.Width(property.valueVector2Int.x));
-                        options.Add(GUILayout.Height(property.valueVector2Int.y));
-                        defaultHeightAdded = true;
-                        break;
-                    case PropertyType.Padding:
-                        style.padding = property.valueRectOffset;
-                        break;
-                    case PropertyType.TextAnchor:
-                        style.alignment = property.valueTextAnchor;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
+                    switch (property.type)
+                    {
+                        case PropertyType.Enabled:
+                            enabledPreset = true;
+                            enabledValue = property.valueBool;
+                            break;
+                        case PropertyType.Width:
+                            options ??= new List<GUILayoutOption>();
+                            options.Add(GUILayout.Width(property.valueInt));
+                            break;
+                        case PropertyType.Height:
+                            options ??= new List<GUILayoutOption>();
+                            options.Add(GUILayout.Height(property.valueInt));
+                            defaultHeightAdded = true;
+                            break;
+                        case PropertyType.Size:
+                            options ??= new List<GUILayoutOption>();
+                            options.Add(GUILayout.Width(property.valueVector2Int.x));
+                            options.Add(GUILayout.Height(property.valueVector2Int.y));
+                            defaultHeightAdded = true;
+                            break;
+                        case PropertyType.Padding:
+                            style.padding = property.valueRectOffset;
+                            break;
+                        case PropertyType.TextAnchor:
+                            style.alignment = property.valueTextAnchor;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
+                    }
                 }
             }
 
@@ -80,7 +88,7 @@ namespace Build1.UnityEGUI
 
             var clicked = false;
 
-            if (enabledPresent)
+            if (enabledPreset)
             {
                 Enabled(enabledValue, () =>
                 {

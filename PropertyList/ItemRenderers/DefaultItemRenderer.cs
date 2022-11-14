@@ -19,10 +19,10 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
                     
                     EGUI.Label(title, EGUI.Height(height), EGUI.FontStyle(FontStyle.Normal));
 
-                    RenderDetailsButton(height);
-                    RenderUpButton(height);
-                    RenderDownButton(height);
-                    RenderDeleteButton(height);
+                    TryRenderButton(ButtonType.Details, height);
+                    TryRenderButton(ButtonType.Up, height);
+                    TryRenderButton(ButtonType.Down, height);
+                    TryRenderButton(ButtonType.Delete, height);
                 });
             });
         }

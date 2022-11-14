@@ -24,6 +24,11 @@ namespace Build1.UnityEGUI
         public static FontStyle TitleH3FontStyle { get; set; } = UnityEngine.FontStyle.Bold;
         public static Color     TitleH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
+        public static void Title(string title, TitleType type)
+        {
+            Title(title, type, null);
+        }
+        
         public static void Title(string title, TitleType type, params Property[] properties)
         {
             var fontSize = type switch
@@ -61,31 +66,34 @@ namespace Build1.UnityEGUI
             };
 
             var alignmentSet = false;
-            
-            foreach (var property in properties)
+
+            if (properties != null)
             {
-                switch (property.type)
+                foreach (var property in properties)
                 {
-                    case PropertyType.TextAnchor:
-                        style.alignment = property.valueTextAnchor;
-                        alignmentSet = true;
-                        break;
+                    switch (property.type)
+                    {
+                        case PropertyType.TextAnchor:
+                            style.alignment = property.valueTextAnchor;
+                            alignmentSet = true;
+                            break;
 
-                    case PropertyType.StretchedWidth:
-                        style.stretchWidth = property.valueBool;
-                        break;
+                        case PropertyType.StretchedWidth:
+                            style.stretchWidth = property.valueBool;
+                            break;
                     
-                    case PropertyType.StretchedHeight:
-                        style.stretchHeight = property.valueBool;
-                        break;
+                        case PropertyType.StretchedHeight:
+                            style.stretchHeight = property.valueBool;
+                            break;
 
-                    case PropertyType.OffsetX:
-                        style.contentOffset = new Vector2(property.valueInt, style.contentOffset.y);
-                        break;
+                        case PropertyType.OffsetX:
+                            style.contentOffset = new Vector2(property.valueInt, style.contentOffset.y);
+                            break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
-                }
+                        default:
+                            throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
+                    }
+                } 
             }
 
             if (!alignmentSet)
