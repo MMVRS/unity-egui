@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Build1.UnityEGUI.Properties;
 using Build1.UnityEGUI.PropertyList.ItemRenderers;
 using Build1.UnityEGUI.PropertyWindow;
 using Build1.UnityEGUI.Types;
@@ -17,13 +18,16 @@ namespace Build1.UnityEGUI.PropertyList
         internal List<I>    Items      { get; set; }
         internal int        Padding    { get; set; } = 10;
 
-        private Type _itemRendererType;
+        private Type       _itemRendererType;
+        private ButtonType _itemRendererButtons = ButtonType.All;
+
         private Type _windowRendererType;
 
-        private string    _title;
-        private FontStyle _titleStyle     = FontStyle.Normal;
-        private bool      _titleShow      = true;
-        private bool      _titleShowCount = true;
+        private string     _title;
+        private Property[] _titleProperties;
+        private bool       _titleShow = true;
+
+        private bool _countShow = true;
 
         private Action<List<I>>                     _onCreate;
         private Action                              _onFilters;
@@ -64,62 +68,65 @@ namespace Build1.UnityEGUI.PropertyList
          * Public
          */
 
-        public PropertyList<I> Title(string title)
-        {
-            _title = title;
-            return this;
-        }
-
-        public PropertyList<I> Title(FontStyle fontStyle)
-        {
-            _titleStyle = fontStyle;
-            return this;
-        }
-
-        public PropertyList<I> Title(bool showCount)
-        {
-            _titleShowCount = showCount;
-            return this;
-        }
-
-        public PropertyList<I> Title(string title, FontStyle fontStyle)
-        {
-            _title = title;
-            _titleStyle = fontStyle;
-            return this;
-        }
-
-        public PropertyList<I> Title(string title, bool showCount)
-        {
-            _title = title;
-            _titleShowCount = showCount;
-            return this;
-        }
-
-        public PropertyList<I> Title(FontStyle fontStyle, bool showCount)
-        {
-            _titleStyle = fontStyle;
-            _titleShowCount = showCount;
-            return this;
-        }
-
-        public PropertyList<I> Title(string title, FontStyle fontStyle, bool showCount)
-        {
-            _title = title;
-            _titleStyle = fontStyle;
-            _titleShowCount = showCount;
-            return this;
-        }
-
-        public PropertyList<I> NoHeader()
+        public PropertyList<I> NoTitle()
         {
             _titleShow = false;
             return this;
         }
 
+        public PropertyList<I> Title(string title, params Property[] properties)
+        {
+            _title = title;
+            _titleProperties = properties;
+            return this;
+        }
+
+        public PropertyList<I> NoCount()
+        {
+            _countShow = false;
+            return this;
+        }
+        
+        public PropertyList<I> OnFilters(Action handler)
+        {
+            _onFilters = handler;
+            return this;
+        }
+        
         public PropertyList<I> ItemRenderer<R>() where R : PropertyListItemRenderer<I>
         {
             _itemRendererType = typeof(R);
+            return this;
+        }
+
+        public PropertyList<I> ItemRenderer<R>(ButtonType buttons) where R : PropertyListItemRenderer<I>
+        {
+            _itemRendererType = typeof(R);
+            _itemRendererButtons = buttons;
+            return this;
+        }
+
+        public PropertyList<I> ItemButtons(ButtonType buttons)
+        {
+            _itemRendererButtons = buttons;
+            return this;
+        }
+        
+        public PropertyList<I> OnItemRender(Action<PropertyListItemRenderer<I>> handler)
+        {
+            _onItemRender = handler;
+            return this;
+        }
+        
+        public PropertyList<I> OnItemTitle(Func<I, string> handler)
+        {
+            _onItemTitle = handler;
+            return this;
+        }
+        
+        public PropertyList<I> OnItemFilter(Func<I, bool> handler)
+        {
+            _onItemFilter = handler;
             return this;
         }
 
@@ -129,64 +136,45 @@ namespace Build1.UnityEGUI.PropertyList
             return this;
         }
 
-        public PropertyList<I> OnFilters(Action handler)
-        {
-            _onFilters = handler;
-            return this;
-        }
-
-
-        public PropertyList<I> OnItemTitle(Func<I, string> handler)
-        {
-            _onItemTitle = handler;
-            return this;
-        }
-
-        public PropertyList<I> OnItemRender(Action<PropertyListItemRenderer<I>> handler)
-        {
-            _onItemRender = handler;
-            return this;
-        }
-
         public PropertyList<I> OnItemAdd(Func<I> handler)
         {
             _onItemAdd = handler;
             return this;
         }
-
+        
         public PropertyList<I> OnItemAddAvailable(Func<bool> handler)
         {
             _onItemAddAvailable = handler;
             return this;
         }
-
+        
         public PropertyList<I> OnItemAddValidation(Func<bool> handler)
         {
             _onItemAddValidation = handler;
             return this;
         }
-
+        
+        public PropertyList<I> OnItemIndexChanged(Action<I, int> handler)
+        {
+            _onItemIndexChanged = handler;
+            return this;
+        }
+        
         public PropertyList<I> OnItemDelete(Func<I, bool> handler)
         {
             _onItemDelete = handler;
             return this;
         }
-
-        public PropertyList<I> OnItemFilter(Func<I, bool> handler)
-        {
-            _onItemFilter = handler;
-            return this;
-        }
-
+        
         public PropertyList<I> OnItemDetails(Action<I> handler)
         {
             _onItemDetails = handler;
             return this;
         }
 
-        public PropertyList<I> OnItemIndexChanged(Action<I, int> handler)
+        public PropertyList<I> ReadOnly()
         {
-            _onItemIndexChanged = handler;
+            _onItemAddAvailable = () => false;
             return this;
         }
 
@@ -200,17 +188,21 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void Build()
         {
-            if (_titleShow)
+            if (_titleShow || _countShow)
             {
                 EGUI.Horizontally(() =>
                 {
-                    EGUI.Label(_title ?? Label, _titleStyle);
-                    EGUI.Space();
+                    if (_titleShow)
+                        EGUI.Label(_title ?? Label, _titleProperties);
 
-                    if (_titleShowCount)
+                    if (_countShow)
                     {
+                        EGUI.Space();
                         EGUI.Label("Count:");
-                        EGUI.Enabled(false, () => { EGUI.Int(Items?.Count ?? 0, 50, c => { }); });
+                        EGUI.Enabled(false, () =>
+                        {
+                            EGUI.Int(Items?.Count ?? 0, EGUI.Width(50));
+                        });
                     }
                 });
 
@@ -244,7 +236,6 @@ namespace Build1.UnityEGUI.PropertyList
 
             var pagerSet = _pageSize > 0;
             var itemAdditionAvailable = _onItemAddAvailable == null || _onItemAddAvailable.Invoke();
-
             if (pagerSet || itemAdditionAvailable)
             {
                 EGUI.Space(3);
@@ -256,23 +247,17 @@ namespace Build1.UnityEGUI.PropertyList
                     {
                         EGUI.Space();
 
-                        EGUI.Button("←", 30, 22, new RectOffset(0, 0, 0, 2), Prev);
-                        EGUI.Label($"{_page + 1}/{_pagesTotal}", 45, 22, FontStyle.Normal, TextAnchor.MiddleCenter);
-                        EGUI.Button("→", 30, 22, new RectOffset(0, 0, 0, 2), Next);
+                        EGUI.Button("←", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Prev);
+                        EGUI.Label($"{_page + 1}/{_pagesTotal}", EGUI.Size(45, 22), EGUI.FontStyle(FontStyle.Normal), EGUI.TextAnchor(TextAnchor.MiddleCenter));
+                        EGUI.Button("→", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Next);
                     }
 
                     EGUI.Space();
 
                     if (itemAdditionAvailable)
-                        EGUI.Button("+", 30, 22, new RectOffset(0, 0, 0, 2), Add);
-                    else
-                        EGUI.Space(30);
+                        EGUI.Button("+", EGUI.Size(30, 22), EGUI.Padding(new RectOffset(0, 0, 0, 2))).OnClick(Add);
                 });
                 EGUI.Space(3);
-            }
-            else
-            {
-                EGUI.Space(28);
             }
         }
 
@@ -285,7 +270,7 @@ namespace Build1.UnityEGUI.PropertyList
             if (_onFilters == null)
                 return;
 
-            EGUI.Label("Filters", FontStyle.Bold);
+            EGUI.Label("Filters", EGUI.FontStyle(FontStyle.Bold));
             EGUI.Space(1);
 
             _onFilters?.Invoke();
@@ -329,7 +314,7 @@ namespace Build1.UnityEGUI.PropertyList
             if (items == null || items.Count == 0)
             {
                 EGUI.Space(25);
-                EGUI.Label("No Items", true, TextAnchor.MiddleCenter);
+                EGUI.Label("No Items", EGUI.StretchedWidth(), EGUI.TextAnchor(TextAnchor.MiddleCenter));
                 EGUI.Space(25);
                 return;
             }
@@ -337,7 +322,7 @@ namespace Build1.UnityEGUI.PropertyList
             for (var i = 0; i < items.Count; i++)
             {
                 PropertyListItemRenderer<I> itemRenderer;
-                
+
                 var item = items[i];
 
                 if (_itemRendererType != null)
@@ -354,11 +339,11 @@ namespace Build1.UnityEGUI.PropertyList
                     {
                         Title = _onItemTitle?.Invoke(item)
                     };
-                    
+
                     itemRenderer = itemRendererDefault;
                 }
-                
-                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items);
+
+                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items, _itemRendererButtons);
                 itemRenderer.OnEGUI();
 
                 ProcessAction(itemRenderer.Action, itemRenderer.Item);

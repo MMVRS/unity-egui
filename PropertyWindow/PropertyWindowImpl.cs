@@ -5,25 +5,33 @@ using UnityEngine;
 
 namespace Build1.UnityEGUI.PropertyWindow
 {
-    internal sealed class PropertyWindowImpl : EGUIWindow
+    public sealed class PropertyWindowImpl : EGUIWindow
     {
         private PropertyWindow _window;
         private Vector2        _scrollPosition = new(0, 1);
 
-        protected override void OnAwake()
-        {
-            Padding = 10;
-        }
-        
         /*
          * Public.
          */
 
-        public void Initialize(PropertyWindow window)
+        public PropertyWindowImpl Initialize(PropertyWindow window)
         {
             _window = window;
-            
-            FocusLost += _window.OnFocusLost;
+            return this;
+        }
+
+        protected override void OnFocusLost()
+        {
+            if (_window == null)
+                Close();
+            else
+                _window.OnFocusLost();
+        }
+
+        public new PropertyWindowImpl Show()
+        {
+            base.Show();
+            return this;
         }
         
         /*
@@ -32,6 +40,8 @@ namespace Build1.UnityEGUI.PropertyWindow
         
         protected override void OnEGUI()
         {
+            Padding = 10;
+            
             try
             {
                 EGUI.Scroll(ref _scrollPosition, _window.OnEGUI);
@@ -47,7 +57,7 @@ namespace Build1.UnityEGUI.PropertyWindow
             EGUI.Horizontally(() =>
             {
                 EGUI.Space();
-                EGUI.Button("Close", 120, EGUI.ButtonHeight02, Close);
+                EGUI.Button("Close", EGUI.Size(120, EGUI.ButtonHeight02)).OnClick(Close);
             });
         }
     }

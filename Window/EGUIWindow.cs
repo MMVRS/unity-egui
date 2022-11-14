@@ -8,9 +8,7 @@ namespace Build1.UnityEGUI.Window
 {
     public abstract class EGUIWindow : EditorWindow
     {
-        protected int Padding { get; set; }
-
-        protected event Action FocusLost;
+        protected int Padding { get; set; } = -1;
 
         private Type _initializeFlag;
 
@@ -21,15 +19,25 @@ namespace Build1.UnityEGUI.Window
 
         protected virtual void OnAwake() { }
 
+        private void OnLostFocus()
+        {
+            OnFocusLost();
+        }
+
+        protected virtual void OnFocusLost() { }
+
         private void OnGUI()
         {
+            if (Padding == -1)
+                Padding = EGUI.WindowPaddingDefault;
+            
             if (_initializeFlag == null)
             {
                 OnInitialize();
                 _initializeFlag = GetType();
             }
 
-            if (Padding != 0)
+            if (Padding > 0)
             {
                 GUILayout.BeginArea(new Rect(Padding, Padding, position.width - Padding * 2, position.height - Padding * 2.5F));
                 OnEGUI();
@@ -43,65 +51,59 @@ namespace Build1.UnityEGUI.Window
 
         protected virtual  void OnInitialize() { }
         protected abstract void OnEGUI();
+    }
+
+    public abstract class EGUIWindow<D> : EditorWindow
+    {
+        protected D   Data    { get; private set; }
+        protected int Padding { get; set; } = -1;
+
+        private Type _initializeFlag;
         
+        internal void SetData(D data)
+        {
+            Data = data;
+        }
+        
+        private void Awake()
+        {
+            OnAwake();
+        }
+
+        protected virtual void OnAwake() { }
+
         private void OnLostFocus()
         {
-            FocusLost?.Invoke();
+            OnFocusLost();
         }
 
-        /*
-         * Static.
-         */
+        protected virtual void OnFocusLost() { }
 
-        public static T Open<T>(string title, bool utility, bool focus) where T : EGUIWindow
+        private void OnGUI()
         {
-            return GetWindow<T>(utility, title, focus);
-        }
-
-        public static T Open<T>(string title, Vector2Int dimensions, bool utility, bool focus, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
-        {
-            return Open<T>(title, dimensions.x, dimensions.y, utility, focus, anchor);
-        }
-
-        public static T Open<T>(string title, int width, int height, bool utility, bool focus, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
-        {
-            var window = GetWindow<T>(utility, title, focus);
-            window.position = GetWindowRect(width, height, anchor);
-            return window;
-        }
-
-        public static T Create<T>(string title) where T : EGUIWindow
-        {
-            var window = CreateWindow<T>(title);
-            window.Show();
-            return window;
-        }
-
-        public static T Create<T>(string title, int width, int height, bool show, EGUIWindowAnchor anchor = EGUIWindowAnchor.Center) where T : EGUIWindow
-        {
-            var window = CreateWindow<T>(title);
-            window.position = GetWindowRect(width, height, anchor);
+            if (Padding == -1)
+                Padding = EGUI.WindowPaddingDefault;
             
-            if (show)
-                window.Show();
-            
-            return window;
-        }
-
-        public static Rect GetWindowRect(int width, int height, EGUIWindowAnchor anchor)
-        {
-            switch (anchor)
+            if (_initializeFlag == null)
             {
-                case EGUIWindowAnchor.Center:
-                    var main = EditorGUIUtility.GetMainWindowPosition();
-                    var centerWidth = (main.width - width) * 0.5f;
-                    var centerHeight = (main.height - height) * 0.5f;
-                    return new Rect(main.x + centerWidth, main.y + centerHeight, width, height);
+                OnInitialize();
+                _initializeFlag = GetType();
+            }
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(anchor), anchor, null);
+            if (Padding > 0)
+            {
+                GUILayout.BeginArea(new Rect(Padding, Padding, position.width - Padding * 2, position.height - Padding * 2.5F));
+                OnEGUI(Data);
+                GUILayout.EndArea();
+            }
+            else
+            {
+                OnEGUI(Data);
             }
         }
+
+        protected virtual  void OnInitialize() { }
+        protected abstract void OnEGUI(D data);
     }
 }
 

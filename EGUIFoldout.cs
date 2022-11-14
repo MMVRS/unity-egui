@@ -12,7 +12,7 @@ namespace Build1.UnityEGUI
     public static partial class EGUI
     {
         public static int       FoldoutH3FontSize  { get; set; } = 14;
-        public static FontStyle FoldoutH3FontStyle { get; set; } = FontStyle.Bold;
+        public static FontStyle FoldoutH3FontStyle { get; set; } = UnityEngine.FontStyle.Bold;
         public static Color     FoldoutH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         private static readonly Dictionary<string, FoldInfo> _infos = new();
