@@ -26,8 +26,8 @@ namespace Build1.UnityEGUI.PropertyList
         private string     _title;
         private Property[] _titleProperties;
         private bool       _titleShow = true;
-
-        private bool _countShow = true;
+        private bool       _countShow = true;
+        private bool       _panelShow = true;
 
         private Action<List<I>>                     _onCreate;
         private Action                              _onFilters;
@@ -84,6 +84,12 @@ namespace Build1.UnityEGUI.PropertyList
         public PropertyList<I> NoCount()
         {
             _countShow = false;
+            return this;
+        }
+        
+        public PropertyList<I> NoPanel()
+        {
+            _panelShow = false;
             return this;
         }
         
@@ -209,10 +215,19 @@ namespace Build1.UnityEGUI.PropertyList
                 EGUI.Space(3);
             }
 
-            var style = new GUIStyle(EditorStyles.helpBox)
+            GUIStyle style;
+            
+            if (_panelShow)
             {
-                padding = new RectOffset(Padding, Padding, Padding, Padding)
-            };
+                style = new GUIStyle(EditorStyles.helpBox)
+                {
+                    padding = new RectOffset(Padding, Padding, Padding, Padding)
+                };    
+            }
+            else
+            {
+                style = GUIStyle.none;
+            }
 
             switch (LayoutType)
             {

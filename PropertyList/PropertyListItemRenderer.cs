@@ -93,7 +93,7 @@ namespace Build1.UnityEGUI.PropertyList
                     EGUI.Button("×", EGUI.Size(30, height), EGUI.Padding(new RectOffset(1, 1, 0, 2))).OnClick(SetAction, PropertyListItemAction.Delete);
                     break;
                 case ButtonType.Details:
-                    EGUI.Button("...", EGUI.Size(30, height), EGUI.Padding(new RectOffset(2, 0, 0, 0))).OnClick(SetAction, PropertyListItemAction.Details);
+                    EGUI.Button("...", EGUI.Size(30, height)).OnClick(SetAction, PropertyListItemAction.Details);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
