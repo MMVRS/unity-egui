@@ -40,6 +40,7 @@ namespace Build1.UnityEGUI.PropertyList
         private Func<I, bool>                       _onItemFilter;
         private Action<I>                           _onItemDetails;
         private Action<I, int>                      _onItemIndexChanged;
+        private bool                                _isReadOnly;
 
         private int    _pageSize;
         private object _pageStorageKey;
@@ -180,7 +181,7 @@ namespace Build1.UnityEGUI.PropertyList
 
         public PropertyList<I> ReadOnly()
         {
-            _onItemAddAvailable = () => false;
+            _isReadOnly = true;
             return this;
         }
 
@@ -250,7 +251,7 @@ namespace Build1.UnityEGUI.PropertyList
             }
 
             var pagerSet = _pageSize > 0;
-            var itemAdditionAvailable = _onItemAddAvailable == null || _onItemAddAvailable.Invoke();
+            var itemAdditionAvailable = !_isReadOnly && (_onItemAddAvailable == null || _onItemAddAvailable.Invoke());
             if (pagerSet || itemAdditionAvailable)
             {
                 EGUI.Space(3);
@@ -358,7 +359,7 @@ namespace Build1.UnityEGUI.PropertyList
                     itemRenderer = itemRendererDefault;
                 }
 
-                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items, _itemRendererButtons);
+                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items, _isReadOnly ? ButtonType.Details : _itemRendererButtons);
                 itemRenderer.OnEGUI();
 
                 ProcessAction(itemRenderer.Action, itemRenderer.Item);
