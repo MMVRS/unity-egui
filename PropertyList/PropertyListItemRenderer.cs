@@ -62,24 +62,24 @@ namespace Build1.UnityEGUI.PropertyList
          * Buttons.
          */
 
-        protected void TryRenderButton(ButtonType button)
+        public void TryRenderButton(ButtonType button)
         {
             if ((_buttons & button) == button)
                 RenderButton(button);
         }
         
-        protected void TryRenderButton(ButtonType button, int height)
+        public void TryRenderButton(ButtonType button, int height)
         {
             if ((_buttons & button) == button)
                 RenderButton(button, height);
         }
 
-        protected void RenderButton(ButtonType button)
+        public void RenderButton(ButtonType button)
         {
             RenderButton(button, EGUI.ButtonHeight04);
         }
         
-        protected void RenderButton(ButtonType button, int height)
+        public void RenderButton(ButtonType button, int height)
         {
             switch (button)
             {
