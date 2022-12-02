@@ -163,7 +163,32 @@ namespace Build1.UnityEGUI
          * Properties Bool.
          */
 
-        public static void Property(object instance, bool value, string propertyName, BooleanRenderMode mode = BooleanRenderMode.Toggle, int height = -1)
+        public static void Property(object instance, bool value, string propertyName)
+        {
+            Property(instance, value, propertyName);
+        }
+        
+        public static void Property(object instance, bool value, string propertyName, BooleanRenderMode mode)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, value =>
+            {
+                switch (mode)
+                {
+                    case BooleanRenderMode.Toggle:
+                        return EditorGUILayout.Toggle(value);
+
+                    case BooleanRenderMode.Dropdown:
+                        var style = new GUIStyle(EditorStyles.popup);
+                        var index = EditorGUILayout.Popup(value ? 1 : 0, BoolDropdownItems, style);
+                        return bool.Parse(BoolDropdownItems[index]);
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+                }
+            });
+        }
+        
+        public static void Property(object instance, bool value, string propertyName, BooleanRenderMode mode, int height)
         {
             PropertyBase(instance, value, propertyName, propertyName, height, value =>
             {
