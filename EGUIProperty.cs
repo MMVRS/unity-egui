@@ -165,7 +165,7 @@ namespace Build1.UnityEGUI
 
         public static void Property(object instance, bool value, string propertyName)
         {
-            Property(instance, value, propertyName);
+            Property(instance, value, propertyName, BooleanRenderMode.Toggle);
         }
         
         public static void Property(object instance, bool value, string propertyName, BooleanRenderMode mode)
