@@ -9,6 +9,11 @@ namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
+        public static PropertyList<int> PropertyList(object instance, IList<int> items, string propertyName)
+        {
+            return PropertyList<int>(instance, items, propertyName).ItemRenderer<IntItemRenderer>();
+        }
+        
         public static PropertyList<string> PropertyList(object instance, IList<string> items, string propertyName)
         {
             return PropertyList<string>(instance, items, propertyName).ItemRenderer<StringItemRenderer>();
