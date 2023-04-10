@@ -12,9 +12,9 @@ namespace Build1.UnityEGUI.PropertyList.ItemRenderers
             {
                 EGUI.Enum(Item, EGUI.ButtonHeight02, value => { SetItem((T)value); });
                 
-                TryRenderButton(ButtonType.Up);
-                TryRenderButton(ButtonType.Down);
-                TryRenderButton(ButtonType.Delete);
+                TryRenderButton(ButtonType.Up, EGUI.ButtonHeight02);
+                TryRenderButton(ButtonType.Down, EGUI.ButtonHeight02);
+                TryRenderButton(ButtonType.Delete, EGUI.ButtonHeight02);
             });
         }
     }
