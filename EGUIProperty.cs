@@ -104,6 +104,14 @@ namespace Build1.UnityEGUI
                 };
             });
         }
+        
+        public static void Property(object instance, long value, string propertyName)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, valueNew =>
+            {
+                return EditorGUILayout.LongField(valueNew);
+            });
+        }
 
         public static void Property(object instance, float value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, float min = float.MinValue, float max = float.MaxValue)
         {
