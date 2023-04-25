@@ -87,6 +87,14 @@ namespace Build1.UnityEGUI
          * Properties Numeric.
          */
 
+        public static void Property(object instance, uint value, string propertyName, int min = int.MinValue, int max = int.MaxValue)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, valueNew =>
+            {
+                return (uint)EditorGUILayout.LongField(valueNew);
+            });
+        }
+        
         public static void Property(object instance, int value, string propertyName, NumericRenderMode mode = NumericRenderMode.Field, int min = int.MinValue, int max = int.MaxValue)
         {
             Property(instance, value, propertyName, propertyName, mode, min, max);
