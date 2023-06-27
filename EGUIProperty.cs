@@ -237,7 +237,7 @@ namespace Build1.UnityEGUI
             {
                 var stringCurrent = value.ToString(CultureInfo.InvariantCulture);
                 var stringNew = GUILayout.TextField(stringCurrent);
-                return DateTime.Parse(stringNew);
+                return DateTime.Parse(stringNew, CultureInfo.InvariantCulture);
             });
         }
         
