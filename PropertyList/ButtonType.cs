@@ -7,13 +7,14 @@ namespace Build1.UnityEGUI.PropertyList
     [Flags]
     public enum ButtonType
     {
-        Up      = 1 << 0,
-        Down    = 1 << 1,
-        Delete  = 1 << 2,
-        Details = 1 << 3,
+        Up        = 1 << 0,
+        Down      = 1 << 1,
+        Delete    = 1 << 2,
+        Details   = 1 << 3,
+        Duplicate = 1 << 4,
 
         None = 0,
-        All  = Up | Down | Delete | Details
+        All  = Up | Down | Delete | Details | Duplicate
     }
 }
 

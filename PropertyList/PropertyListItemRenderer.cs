@@ -95,6 +95,9 @@ namespace Build1.UnityEGUI.PropertyList
                 case ButtonType.Details:
                     EGUI.Button("...", EGUI.Size(30, height)).OnClick(SetAction, PropertyListItemAction.Details);
                     break;
+                case ButtonType.Duplicate:
+                    EGUI.Button("❐", EGUI.Size(30, height)).OnClick(SetAction, PropertyListItemAction.Duplicate);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
             }

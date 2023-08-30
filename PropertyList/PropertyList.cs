@@ -6,6 +6,7 @@ using Build1.UnityEGUI.Properties;
 using Build1.UnityEGUI.PropertyList.ItemRenderers;
 using Build1.UnityEGUI.PropertyWindow;
 using Build1.UnityEGUI.Types;
+using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
@@ -412,6 +413,21 @@ namespace Build1.UnityEGUI.PropertyList
                             _onItemDetails.Invoke(item);
                     }
 
+                    break;
+                
+                case PropertyListItemAction.Duplicate:
+
+                    var itemJson = JsonConvert.SerializeObject(item);
+                    var itemCopy = JsonConvert.DeserializeObject<I>(itemJson);
+                    
+                    Items.Add(itemCopy);
+                    
+                    if (_pageSize > 0)
+                    {
+                        _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
+                        _pageStorage[_pageStorageKey] = _page;
+                    }
+                    
                     break;
             }
         }
