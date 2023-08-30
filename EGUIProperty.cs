@@ -12,7 +12,7 @@ namespace Build1.UnityEGUI
 {
     public static partial class EGUI
     {
-        public static int PropertyLabelWidth     { get; set; } = 200;
+        public static int PropertyLabelWidth     { get; set; } = 220;
         public static int PropertyTextAreaHeight { get; set; } = 100;
 
         private static readonly string[] BoolDropdownItems = { bool.FalseString, bool.TrueString };
