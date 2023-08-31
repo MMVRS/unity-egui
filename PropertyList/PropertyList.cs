@@ -35,6 +35,7 @@ namespace Build1.UnityEGUI.PropertyList
         private Func<I, string>                     _onItemTitle;
         private Action<PropertyListItemRenderer<I>> _onItemRender;
         private Func<I>                             _onItemAdd;
+        private Func<I, I>                          _onItemCopy;
         private Func<bool>                          _onItemAddAvailable;
         private Func<bool>                          _onItemAddValidation;
         private Func<I, bool>                       _onItemDelete;
@@ -88,19 +89,19 @@ namespace Build1.UnityEGUI.PropertyList
             _countShow = false;
             return this;
         }
-        
+
         public PropertyList<I> NoPanel()
         {
             _panelShow = false;
             return this;
         }
-        
+
         public PropertyList<I> OnFilters(Action handler)
         {
             _onFilters = handler;
             return this;
         }
-        
+
         public PropertyList<I> ItemRenderer<R>() where R : PropertyListItemRenderer<I>
         {
             _itemRendererType = typeof(R);
@@ -119,19 +120,19 @@ namespace Build1.UnityEGUI.PropertyList
             _itemRendererButtons = buttons;
             return this;
         }
-        
+
         public PropertyList<I> OnItemRender(Action<PropertyListItemRenderer<I>> handler)
         {
             _onItemRender = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemTitle(Func<I, string> handler)
         {
             _onItemTitle = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemFilter(Func<I, bool> handler)
         {
             _onItemFilter = handler;
@@ -149,31 +150,37 @@ namespace Build1.UnityEGUI.PropertyList
             _onItemAdd = handler;
             return this;
         }
-        
+
+        public PropertyList<I> OnItemCopy(Func<I, I> handler)
+        {
+            _onItemCopy = handler;
+            return this;
+        }
+
         public PropertyList<I> OnItemAddAvailable(Func<bool> handler)
         {
             _onItemAddAvailable = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemAddValidation(Func<bool> handler)
         {
             _onItemAddValidation = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemIndexChanged(Action<I, int> handler)
         {
             _onItemIndexChanged = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemDelete(Func<I, bool> handler)
         {
             _onItemDelete = handler;
             return this;
         }
-        
+
         public PropertyList<I> OnItemDetails(Action<I> handler)
         {
             _onItemDetails = handler;
@@ -207,10 +214,7 @@ namespace Build1.UnityEGUI.PropertyList
                     {
                         EGUI.Space();
                         EGUI.Label("Count:");
-                        EGUI.Enabled(false, () =>
-                        {
-                            EGUI.Int(Items?.Count ?? 0, EGUI.Width(50));
-                        });
+                        EGUI.Enabled(false, () => { EGUI.Int(Items?.Count ?? 0, EGUI.Width(50)); });
                     }
                 });
 
@@ -218,13 +222,13 @@ namespace Build1.UnityEGUI.PropertyList
             }
 
             GUIStyle style;
-            
+
             if (_panelShow)
             {
                 style = new GUIStyle(EditorStyles.helpBox)
                 {
                     padding = new RectOffset(Padding, Padding, Padding, Padding)
-                };    
+                };
             }
             else
             {
@@ -414,20 +418,47 @@ namespace Build1.UnityEGUI.PropertyList
                     }
 
                     break;
-                
-                case PropertyListItemAction.Duplicate:
 
-                    var itemJson = JsonConvert.SerializeObject(item);
-                    var itemCopy = JsonConvert.DeserializeObject<I>(itemJson);
+                case PropertyListItemAction.Copy:
+
+                    I itemCopy;
                     
-                    Items.Add(itemCopy);
-                    
-                    if (_pageSize > 0)
+                    var type = typeof(I);
+                    var isClass = type.IsClass;
+                    var isStruct = type.IsValueType && !type.IsPrimitive;
+
+                    if (isClass || isStruct)
                     {
-                        _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
-                        _pageStorage[_pageStorageKey] = _page;
+                        var itemJson = JsonConvert.SerializeObject(item);
+                        itemCopy = JsonConvert.DeserializeObject<I>(itemJson);
                     }
-                    
+                    else if (typeof(I) == typeof(string))
+                    {
+                        itemCopy = (I)(object)string.Copy((string)(object)item);
+                    }
+                    else if (type.IsPrimitive)
+                    {
+                        itemCopy = item;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Type copying not implemented. Type: {type.FullName}");
+                    }
+
+                    if (_onItemCopy != null)
+                        itemCopy = _onItemCopy.Invoke(itemCopy);
+
+                    if (itemCopy != null)
+                    {
+                        Items.Add(itemCopy);
+
+                        if (_pageSize > 0)
+                        {
+                            _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
+                            _pageStorage[_pageStorageKey] = _page;
+                        }    
+                    }
+
                     break;
             }
         }
