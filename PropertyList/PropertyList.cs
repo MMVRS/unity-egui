@@ -19,8 +19,8 @@ namespace Build1.UnityEGUI.PropertyList
         internal List<I>    Items      { get; set; }
         internal int        Padding    { get; set; } = 10;
 
-        private Type       _itemRendererType;
-        private ButtonType _itemRendererButtons = ButtonType.All;
+        private Type         _itemRendererType;
+        private ButtonType[] _itemRendererButtons = RenderingItemRenderer.ButtonsAll;
 
         private Type _windowRendererType;
 
@@ -108,14 +108,14 @@ namespace Build1.UnityEGUI.PropertyList
             return this;
         }
 
-        public PropertyList<I> ItemRenderer<R>(ButtonType buttons) where R : PropertyListItemRenderer<I>
+        public PropertyList<I> ItemRenderer<R>(params ButtonType[] buttons) where R : PropertyListItemRenderer<I>
         {
             _itemRendererType = typeof(R);
             _itemRendererButtons = buttons;
             return this;
         }
 
-        public PropertyList<I> ItemButtons(ButtonType buttons)
+        public PropertyList<I> ItemButtons(params ButtonType[] buttons)
         {
             _itemRendererButtons = buttons;
             return this;
@@ -364,7 +364,7 @@ namespace Build1.UnityEGUI.PropertyList
                     itemRenderer = itemRendererDefault;
                 }
 
-                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items, _isReadOnly ? ButtonType.Details : _itemRendererButtons);
+                itemRenderer.Init(item, i, Items.IndexOf(item), items, Items, _isReadOnly ? new[] { ButtonType.Details } : _itemRendererButtons);
                 itemRenderer.OnEGUI();
 
                 ProcessAction(itemRenderer.Action, itemRenderer.Item);
@@ -422,7 +422,7 @@ namespace Build1.UnityEGUI.PropertyList
                 case PropertyListItemAction.Copy:
 
                     I itemCopy;
-                    
+
                     var type = typeof(I);
                     var isClass = type.IsClass;
                     var isStruct = type.IsValueType && !type.IsPrimitive;
@@ -456,7 +456,7 @@ namespace Build1.UnityEGUI.PropertyList
                         {
                             _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
                             _pageStorage[_pageStorageKey] = _page;
-                        }    
+                        }
                     }
 
                     break;

@@ -2,15 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Build1.UnityEGUI.PropertyList
 {
     public abstract class PropertyListItemRenderer<I>
     {
-        public    I                      Item            { get; private set; }
-        public    PropertyListItemAction Action          { get; private set; } = PropertyListItemAction.None;
-        public    ButtonType             Buttons         => _buttons;
+        public I                       Item    { get; private set; }
+        public PropertyListItemAction  Action  { get; private set; } = PropertyListItemAction.None;
+        public IEnumerable<ButtonType> Buttons => _buttons;
         
         protected int                    Index           { get; private set; }
         protected int                    IndexUnfiltered { get; private set; }
@@ -20,13 +21,13 @@ namespace Build1.UnityEGUI.PropertyList
 
         private List<I>    _items;
         private List<I>    _itemsUnfiltered;
-        private ButtonType _buttons;
+        private IEnumerable<ButtonType> _buttons;
 
         /*
          * Internal.
          */
 
-        internal void Init(I item, int index, int indexUnfiltered, List<I> items, List<I> itemsUnfiltered, ButtonType buttons)
+        internal void Init(I item, int index, int indexUnfiltered, List<I> items, List<I> itemsUnfiltered, IEnumerable<ButtonType> buttons)
         {
             Item = item;
             
@@ -64,13 +65,13 @@ namespace Build1.UnityEGUI.PropertyList
 
         public void TryRenderButton(ButtonType button)
         {
-            if ((_buttons & button) == button)
+            if (_buttons.Contains(button))
                 RenderButton(button);
         }
         
         public void TryRenderButton(ButtonType button, int height)
         {
-            if ((_buttons & button) == button)
+            if (_buttons.Contains(button))
                 RenderButton(button, height);
         }
 
@@ -101,6 +102,12 @@ namespace Build1.UnityEGUI.PropertyList
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
             }
+        }
+
+        protected void RenderButtons(int height)
+        {
+            foreach (var button in _buttons)
+                RenderButton(button, height);
         }
     }
 }
