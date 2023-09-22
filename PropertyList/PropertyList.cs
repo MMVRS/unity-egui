@@ -445,13 +445,14 @@ namespace Build1.UnityEGUI.PropertyList
                         throw new NotImplementedException($"Type copying not implemented. Type: {type.FullName}");
                     }
 
+                    if (itemCopy != null)
+                        Items.Insert(Items.IndexOf(item) + 1, itemCopy);
+                    
                     if (_onItemCopy != null)
                         itemCopy = _onItemCopy.Invoke(itemCopy);
 
                     if (itemCopy != null)
                     {
-                        Items.Add(itemCopy);
-
                         if (_pageSize > 0)
                         {
                             _page = Mathf.CeilToInt(Items.Count / (float)_pageSize) - 1;
