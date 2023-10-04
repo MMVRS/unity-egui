@@ -63,24 +63,27 @@ namespace Build1.UnityEGUI
         {
             PropertyBase(instance, value, propertyName, propertyName, -1, value =>
             {
-                switch (mode)
+                var valueNew = mode switch
                 {
-                    case StringRenderMode.Field:
-                        return GUILayout.TextField(value);
+                    StringRenderMode.Field    => GUILayout.TextField(value),
+                    StringRenderMode.Area     => GUILayout.TextArea(value, GUILayout.Height(height)),
+                    StringRenderMode.DropDown => RenderStringDropDown(value, items),
+                    _                         => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+                };
 
-                    case StringRenderMode.Area:
-                        return GUILayout.TextArea(value, GUILayout.Height(height));
+                if (valueNew is { Length: 0 })
+                    valueNew = null;
 
-                    case StringRenderMode.DropDown:
-                        items ??= new string[] { };
-                        var index = Array.IndexOf(items, value);
-                        index = EditorGUILayout.Popup(index, items);
-                        return index != -1 ? items[index] : value;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-                }
+                return valueNew;
             });
+        }
+
+        private static string RenderStringDropDown(string value, string[] items)
+        {
+            items ??= new string[] { };
+            var index = Array.IndexOf(items, value);
+            index = EditorGUILayout.Popup(index, items);
+            return index != -1 ? items[index] : value;
         }
 
         /*
