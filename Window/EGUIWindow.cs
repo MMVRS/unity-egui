@@ -40,8 +40,17 @@ namespace Build1.UnityEGUI.Window
             if (Padding > 0)
             {
                 GUILayout.BeginArea(new Rect(Padding, Padding, position.width - Padding * 2, position.height - Padding * 2.5F));
+                
                 OnEGUI();
-                GUILayout.EndArea();
+
+                try
+                {
+                    GUILayout.EndArea();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
             else
             {
