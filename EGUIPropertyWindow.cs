@@ -54,6 +54,20 @@ namespace Build1.UnityEGUI
 
             _windowsInstances.Add(windowInstance);
         }
+        
+        public static void PropertyWindow<I, T>(Type windowType, I item, int index, List<I> items, T itemsSource)
+        {
+            var window = (PropertyWindow<I, T>)Activator.CreateInstance(windowType);
+            window.Initialize(index, item, items, itemsSource);
+
+            var windowInstance = Window<PropertyWindowImpl>(window.Title, false)
+                                .Size(window.Size)
+                                .Create()
+                                .Initialize(window)
+                                .Show();
+
+            _windowsInstances.Add(windowInstance);
+        }
 
         public static void PropertyWindowCloseAll()
         {

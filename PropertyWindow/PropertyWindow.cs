@@ -5,35 +5,61 @@ using UnityEngine;
 
 namespace Build1.UnityEGUI.PropertyWindow
 {
-    public abstract class PropertyWindow
-    {
-        public virtual Vector2Int Size  => EGUI.PropertyWindowSizeDefault;
-        public virtual string     Title => GetType().Name;
-        
-        public abstract void OnEGUI();
-        public virtual  void OnFocusLost() { }
-    }
-    
-    public abstract class PropertyWindow<I> : PropertyWindow
-    {
-        protected I                Item  { get; private set; }
-        protected int              Index { get; private set; }
-        protected IReadOnlyList<I> Items => _items;
+	public abstract class PropertyWindow
+	{
+		public virtual Vector2Int Size  => EGUI.PropertyWindowSizeDefault;
+		public virtual string     Title => GetType().Name;
 
-        private List<I> _items;
+		public abstract void OnEGUI();
 
-        /*
-         * Public.
-         */
+		public virtual void OnFocusLost()
+		{
+		}
+	}
 
-        internal void Initialize(int index, I item, List<I> items)
-        {
-            Item = item;
-            Index = index;
+	public abstract class PropertyWindow<I> : PropertyWindow
+	{
+		protected I                Item  { get; private set; }
+		protected int              Index { get; private set; }
+		protected IReadOnlyList<I> Items => _items;
 
-            _items = items;
-        }
-    }
+		private List<I> _items;
+
+		/*
+		 * Public.
+		 */
+
+		internal void Initialize(int index, I item, List<I> items)
+		{
+			Item = item;
+			Index = index;
+
+			_items = items;
+		}
+	}
+
+	public abstract class PropertyWindow<I, T> : PropertyWindow
+	{
+		protected T                ItemsSource { get; private set; }
+		protected I                Item        { get; private set; }
+		protected int              Index       { get; private set; }
+		protected IReadOnlyList<I> Items       => _items;
+
+		private List<I> _items;
+
+		/*
+		 * Public.
+		 */
+
+		internal void Initialize(int index, I item, List<I> items, T itemsSource)
+		{
+			Item = item;
+			ItemsSource = itemsSource;
+			Index = index;
+
+			_items = items;
+		}
+	}
 }
 
 #endif
