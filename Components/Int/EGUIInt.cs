@@ -22,6 +22,8 @@ namespace Build1.UnityEGUI
             
             var options = new List<GUILayoutOption>(properties.Length);
             
+            GUIStyle style = null;
+            
             foreach (var property in properties)
             {
                 switch (property.type)
@@ -36,10 +38,19 @@ namespace Build1.UnityEGUI
                         options.Add(GUILayout.Width(property.valueVector2Int.x));
                         options.Add(GUILayout.Height(property.valueVector2Int.y));
                         break;
+                    case PropertyType.TextAnchor:
+                        style = new GUIStyle(EditorStyles.textField)
+                        {
+                            alignment = property.valueTextAnchor
+                        };
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
                 }
             }
+            
+            if (style != null)
+                return new IntResult(value, EditorGUILayout.DelayedIntField(value, style, options.ToArray()));
             
             return new IntResult(value, EditorGUILayout.DelayedIntField(value, options.ToArray()));
         }
