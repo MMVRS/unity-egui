@@ -16,12 +16,13 @@ namespace Build1.UnityEGUI
         public static Color     FoldoutH3Color     { get; set; } = EditorGUIUtility.isProSkin ? Color.white : Color.black;
 
         private static readonly Dictionary<string, FoldInfo> _infos = new();
-        
+
         public static void Foldout(string title, FoldoutType type, ref bool foldout)
         {
             var fontSize = type switch
             {
                 FoldoutType.Default => EditorStyles.foldout.fontSize,
+                FoldoutType.Bold    => EditorStyles.foldout.fontSize,
                 FoldoutType.H3      => FoldoutH3FontSize,
                 _                   => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
@@ -29,6 +30,7 @@ namespace Build1.UnityEGUI
             var fontStyle = type switch
             {
                 FoldoutType.Default => EditorStyles.foldout.fontStyle,
+                FoldoutType.Bold    => UnityEngine.FontStyle.Bold,
                 FoldoutType.H3      => FoldoutH3FontStyle,
                 _                   => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
@@ -36,6 +38,7 @@ namespace Build1.UnityEGUI
             var color = type switch
             {
                 FoldoutType.Default => EditorStyles.foldout.normal.textColor,
+                FoldoutType.Bold    => EditorStyles.foldout.normal.textColor,
                 FoldoutType.H3      => FoldoutH3Color,
                 _                   => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
@@ -61,27 +64,27 @@ namespace Build1.UnityEGUI
         {
             info = GetFoldInfo(instance);
         }
-        
+
         public static void GetFoldInfo(object instance, int id, out FoldInfo info)
         {
             info = GetFoldInfo(instance, id);
         }
-        
+
         public static FoldInfo GetFoldInfo(object instance)
         {
             return GetFoldInfo(instance.GetType().FullName);
         }
-        
+
         public static FoldInfo GetFoldInfo(object instance, int id)
         {
             return GetFoldInfo($"{instance.GetType().FullName}_{id}");
         }
-        
+
         public static FoldInfo GetFoldInfo(string key)
         {
-            if (_infos.TryGetValue(key, out var folds)) 
+            if (_infos.TryGetValue(key, out var folds))
                 return folds;
-            
+
             folds = new FoldInfo();
             _infos.Add(key, folds);
             return folds;
