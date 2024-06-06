@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -166,6 +167,16 @@ namespace Build1.UnityEGUI
         public static void Property(object instance, Enum value, string propertyName, EnumRenderMode renderMode, int lineSize, float height)
         {
             PropertyBase(instance, value, propertyName, propertyName, -1, valueImpl => Enum(valueImpl, renderMode, lineSize, height));
+        }
+        
+        public static void Property(object instance, Enum value, string propertyName, IList<Enum> items)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, value =>
+            {
+                var index = items.IndexOf(value);
+                index = EditorGUILayout.Popup(index, items.Select(i => FormatCameCase(i.ToString())).ToArray());
+                return items[index];
+            });
         }
         
         public static void Property(object instance, Enum value, string propertyName, params Enum[] items)
