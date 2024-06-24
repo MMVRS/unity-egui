@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,9 +7,10 @@ namespace Build1.UnityEGUI.Window
 {
     public abstract class EGUIWindow : EditorWindow
     {
-        protected int Padding { get; set; } = -1;
-
-        private Type _initializeFlag;
+        protected virtual bool Initialized => _initialized;
+        protected         int  Padding     { get; set; } = -1;
+        
+        private bool _initialized;
 
         private void Awake()
         {
@@ -31,10 +31,17 @@ namespace Build1.UnityEGUI.Window
             if (Padding == -1)
                 Padding = EGUI.WindowPaddingDefault;
             
-            if (_initializeFlag == null)
+            if (!Initialized)
             {
                 OnInitialize();
-                _initializeFlag = GetType();
+                
+                _initialized = true;
+            }
+
+            if (!Initialized)
+            {
+                Close();
+                return;
             }
 
             if (Padding > 0)
@@ -43,14 +50,7 @@ namespace Build1.UnityEGUI.Window
                 
                 OnEGUI();
 
-                try
-                {
-                    GUILayout.EndArea();
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
+                GUILayout.EndArea();
             }
             else
             {
@@ -64,10 +64,11 @@ namespace Build1.UnityEGUI.Window
 
     public abstract class EGUIWindow<D> : EditorWindow
     {
-        protected D   Data    { get; private set; }
-        protected int Padding { get; set; } = -1;
+        protected virtual bool Initialized => _initialized;
+        protected         D    Data        { get; private set; }
+        protected         int  Padding     { get; set; } = -1;
 
-        private Type _initializeFlag;
+        private bool _initialized;
         
         internal void SetData(D data)
         {
@@ -93,16 +94,25 @@ namespace Build1.UnityEGUI.Window
             if (Padding == -1)
                 Padding = EGUI.WindowPaddingDefault;
             
-            if (_initializeFlag == null)
+            if (!_initialized)
             {
                 OnInitialize();
-                _initializeFlag = GetType();
+                
+                _initialized = true;
+            }
+
+            if (!Initialized)
+            {
+                Close();
+                return;
             }
 
             if (Padding > 0)
             {
                 GUILayout.BeginArea(new Rect(Padding, Padding, position.width - Padding * 2, position.height - Padding * 2.5F));
+                
                 OnEGUI(Data);
+                
                 GUILayout.EndArea();
             }
             else
