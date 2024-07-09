@@ -11,6 +11,7 @@ namespace Build1.UnityEGUI.Properties
         Size = 12,
 
         OffsetX = 20,
+        OffsetY = 21,
         Padding = 30,
         
         StretchedWidth  = 40,

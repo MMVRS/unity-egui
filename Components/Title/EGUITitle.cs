@@ -89,6 +89,10 @@ namespace Build1.UnityEGUI
                         case PropertyType.OffsetX:
                             style.contentOffset = new Vector2(property.valueInt, style.contentOffset.y);
                             break;
+                        
+                        case PropertyType.OffsetY:
+                            style.contentOffset = new Vector2(style.contentOffset.x, property.valueInt);
+                            break;
 
                         default:
                             throw new ArgumentOutOfRangeException($"Property not supported: {property.type}");
