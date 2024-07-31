@@ -346,13 +346,13 @@ namespace Build1.UnityEGUI.PropertyList
 
                 var item = items[i];
 
-                if (_itemRendererType != null)
-                {
-                    itemRenderer = (PropertyListItemRenderer<I>)Activator.CreateInstance(_itemRendererType);
-                }
-                else if (_onItemRender != null)
+                if (_onItemRender != null)
                 {
                     itemRenderer = new RenderingItemRenderer<I>(_onItemRender);
+                }
+                else if (_itemRendererType != null)
+                {
+                    itemRenderer = (PropertyListItemRenderer<I>)Activator.CreateInstance(_itemRendererType);
                 }
                 else
                 {
