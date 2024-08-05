@@ -33,7 +33,14 @@ namespace Build1.UnityEGUI.Window
             
             if (!Initialized)
             {
-                OnInitialize();
+                try
+                {
+                    OnInitialize();
+                }
+                catch
+                {
+                    // Ignore.
+                }
                 
                 _initialized = true;
             }
