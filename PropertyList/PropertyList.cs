@@ -374,6 +374,9 @@ namespace Build1.UnityEGUI.PropertyList
         private void ProcessAction(PropertyListItemAction action, I item)
         {
             int index;
+            
+            if (action != PropertyListItemAction.None)
+                GUI.FocusControl(null);
 
             switch (action)
             {
