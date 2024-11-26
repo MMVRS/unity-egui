@@ -30,6 +30,13 @@ namespace Build1.UnityEGUI
             if (newValue != value)
                 onChanged?.Invoke(newValue);
         }
+        
+        public static void Checkbox(string label, bool value, string tooltip, Action<bool> onChanged)
+        {
+            var newValue = GUILayout.Toggle(value, new GUIContent($" {label} *", tooltip));
+            if (newValue != value)
+                onChanged?.Invoke(newValue);
+        }
     }
 }
 
