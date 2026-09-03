@@ -256,6 +256,39 @@ namespace Build1.UnityEGUI
         }
         
         /*
+         * Properties Tuple
+         */
+
+        public static void Property(object instance, (DateTime, int) value, string propertyName, string tooltip = null)
+        {
+            PropertyBase(instance, value, propertyName, propertyName, -1, current =>
+            {
+                var (dt, num) = current;
+
+                var year  = EditorGUILayout.IntField(dt.Year,  GUILayout.Width(44));
+                GUILayout.Label("–", GUILayout.Width(10));
+                var month = EditorGUILayout.IntField(dt.Month, GUILayout.Width(26));
+                GUILayout.Label("–", GUILayout.Width(10));
+                var day   = EditorGUILayout.IntField(dt.Day,   GUILayout.Width(26));
+
+                // Clamp before constructing to avoid ArgumentOutOfRangeException
+                year  = Mathf.Clamp(year,  1, 9999);
+                month = Mathf.Clamp(month, 1, 12);
+                day   = Mathf.Clamp(day,   1, DateTime.DaysInMonth(year, month));
+
+                var newDt = new DateTime(year, month, day,
+                                         dt.Hour, dt.Minute, dt.Second,  // preserve time-of-day
+                                         dt.Kind);
+
+                GUILayout.Space(6);
+                var newNum = EditorGUILayout.IntField(num);
+
+                return (newDt, newNum);
+
+            }, tooltip);
+        }
+
+        /*
          * Properties Base.
          */
 
